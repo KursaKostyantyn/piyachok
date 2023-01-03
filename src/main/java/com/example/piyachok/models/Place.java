@@ -7,6 +7,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,7 +27,11 @@ public class Place {
     @ToString.Exclude
     private Address address;
 
-    private String schedule;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "workSchedule_id", referencedColumnName = "id")
+    private WorkSchedule workSchedule;
+
+
     private boolean isActivated;
     private String description;
 
@@ -36,10 +41,10 @@ public class Place {
     private Contact contacts;
 
     private int averageCheck;
-    private LocalDate creationDate;
+    private LocalDate creationDate =LocalDate.now();
     private String type;
 
-    @ManyToOne (cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_places",
             joinColumns = @JoinColumn(name = "place_id"),
@@ -48,5 +53,16 @@ public class Place {
     @JsonBackReference
     @ToString.Exclude
     private User user;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @JoinTable(
+            name = "places_news",
+            joinColumns = @JoinColumn(name = "place_id"),
+            inverseJoinColumns = @JoinColumn(name = "news_id")
+    )
+    @ToString.Exclude
+    private List<News> news;
+
 
 }

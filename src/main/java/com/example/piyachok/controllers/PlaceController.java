@@ -12,14 +12,15 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/places")
+@RequestMapping("/main/places")
+@CrossOrigin
 public class PlaceController {
 
     private PlaceService placeService;
 
     @PostMapping("")
-    public ResponseEntity<PlaceDTO> savePlace(@RequestBody Place place) {
-        return placeService.savePlace(place);
+    public ResponseEntity<PlaceDTO> savePlace(@RequestParam int userId,@RequestBody Place place) {
+        return placeService.savePlace(userId,place);
     }
 
     @DeleteMapping("/{id}")

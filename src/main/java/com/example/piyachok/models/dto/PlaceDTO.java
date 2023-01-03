@@ -1,12 +1,11 @@
 package com.example.piyachok.models.dto;
 
-import com.example.piyachok.models.Address;
-import com.example.piyachok.models.Contact;
-import com.example.piyachok.models.User;
+import com.example.piyachok.models.*;
 import lombok.*;
 
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +19,7 @@ public class PlaceDTO {
     private String photo;
     @ToString.Exclude
     private Address address;
-    private String schedule;
+    private WorkSchedule workSchedule;
     private boolean isActivated;
     private String description;
     @ToString.Exclude
@@ -28,5 +27,7 @@ public class PlaceDTO {
     private int averageCheck;
     private LocalDate creationDate;
     private String type;
-    private User user;
+    private int  userId;
+    private List<Integer> newsIds;
+
 }

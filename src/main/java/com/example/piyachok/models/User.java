@@ -20,14 +20,18 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(unique = true)
+    private String login;
+
     private String firstName;
     private String lastName;
     private String password;
     private LocalDate birthDate;
     private String email;
-    private Role role;
+    private Role role = Role.ROLE_ADMIN;
     private boolean isActivated;
     private boolean isBlocked;
+    private LocalDate creationDate =LocalDate.now();
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JsonManagedReference

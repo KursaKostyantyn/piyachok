@@ -15,6 +15,8 @@ import java.util.List;
 public class UserDTO {
 
     private int id;
+    private String login;
+    private String password;
     private String firstName;
     private String lastName;
     private LocalDate birthDate;
@@ -22,5 +24,20 @@ public class UserDTO {
     private Role role;
     private boolean isActivated;
     private boolean isBlocked;
+    private LocalDate creationDate;
     private List<Place> places;
+
+    public UserDTO(int id, String login, String firstName, String lastName, LocalDate birthDate, String email, Role role, boolean isActivated, boolean isBlocked, LocalDate creationDate, List<Place> places) {
+        this.id = id;
+        this.login = login;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.email = email;
+        this.role = role;
+        this.isActivated = isActivated;
+        this.isBlocked = isBlocked;
+        this.creationDate = creationDate;
+        this.places = places;
+    }
 }
