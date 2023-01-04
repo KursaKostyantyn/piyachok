@@ -1,9 +1,9 @@
 package com.example.piyachok.security;
 
 import com.example.piyachok.constants.Role;
-import com.example.piyachok.constants.dao.UserDAO;
+import com.example.piyachok.dao.UserDAO;
 import com.example.piyachok.models.User;
-import com.example.piyachok.security.filters.CustomFilter;
+import com.example.piyachok.controllers.filters.CustomFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,6 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/main/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
                 .antMatchers(HttpMethod.GET,"/users/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
                 .antMatchers(HttpMethod.DELETE,"/users/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
+                .antMatchers(HttpMethod.POST,"/refresh").permitAll()
                 .and();
         http = http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
 

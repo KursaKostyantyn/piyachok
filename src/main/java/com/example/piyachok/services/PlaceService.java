@@ -1,7 +1,7 @@
 package com.example.piyachok.services;
 
-import com.example.piyachok.constants.dao.PlaceDAO;
-import com.example.piyachok.constants.dao.UserDAO;
+import com.example.piyachok.dao.PlaceDAO;
+import com.example.piyachok.dao.UserDAO;
 import com.example.piyachok.models.News;
 import com.example.piyachok.models.Place;
 import com.example.piyachok.models.User;

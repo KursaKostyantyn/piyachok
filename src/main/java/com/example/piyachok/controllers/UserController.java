@@ -1,6 +1,7 @@
 package com.example.piyachok.controllers;
 
 import com.example.piyachok.models.User;
+import com.example.piyachok.models.dto.JwtResponseDTO;
 import com.example.piyachok.models.dto.UserDTO;
 import com.example.piyachok.services.UserService;
 import io.jsonwebtoken.Jwts;
@@ -23,15 +24,7 @@ public class UserController {
     private UserService userService;
 
 
-    @PostMapping("/register")
-    public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
-        return userService.saveUser(userDTO);
-    }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
-       return userService.login(user);
-    }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<HttpStatus> deleteUserById(@PathVariable int id) {

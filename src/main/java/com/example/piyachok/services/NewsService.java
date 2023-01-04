@@ -1,7 +1,7 @@
 package com.example.piyachok.services;
 
 import com.example.piyachok.constants.Category;
-import com.example.piyachok.constants.dao.NewsDAO;
+import com.example.piyachok.dao.NewsDAO;
 import com.example.piyachok.models.News;
 import com.example.piyachok.models.dto.NewsDTO;
 import lombok.AllArgsConstructor;

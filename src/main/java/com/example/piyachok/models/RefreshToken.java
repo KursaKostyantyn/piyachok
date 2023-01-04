@@ -1,8 +1,15 @@
 package com.example.piyachok.models;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.time.Instant;
 
+@AllArgsConstructor
+@Setter
+@Getter
+@ToString
+@NoArgsConstructor
 @Entity(name = "refreshTokens")
 public class RefreshToken {
     @Id
