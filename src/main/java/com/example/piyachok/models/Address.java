@@ -24,4 +24,9 @@ public class Address {
     @JsonIgnore
     private Place place;
 
+    public Address(String city, String street, int number) {
+        this.city = city;
+        this.street = street;
+        this.number = number;
+    }
 }

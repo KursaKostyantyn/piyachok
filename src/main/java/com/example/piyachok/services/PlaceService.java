@@ -74,7 +74,6 @@ public class PlaceService {
                 .stream()
                 .map(this::convertPlaceToPlaceDTO)
                 .collect(Collectors.toList()), HttpStatus.OK);
-
     }
 
 

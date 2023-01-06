@@ -1,10 +1,12 @@
 package com.example.piyachok.controllers;
 
+import com.example.piyachok.models.RefreshToken;
 import com.example.piyachok.models.RefreshTokenRequest;
 import com.example.piyachok.models.User;
 import com.example.piyachok.models.dto.JwtResponseDTO;
 import com.example.piyachok.models.dto.UserDTO;
 import com.example.piyachok.services.AuthService;
+import com.example.piyachok.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,19 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private AuthService authService;
 
-    @PostMapping("/register")
-    public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
-        return authService.saveUser(userDTO);
-    }
-
     @PostMapping("/login")
     public ResponseEntity<JwtResponseDTO> login(@RequestBody User user) {
         return authService.login(user);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<JwtResponseDTO> refreshToken(@RequestBody RefreshTokenRequest request) {
-        return authService.refreshToken(request);
+    public ResponseEntity<JwtResponseDTO> refreshToken(@RequestBody RefreshToken refreshTokenRequest) {
+        return authService.refreshToken(refreshTokenRequest);
     }
 
 }

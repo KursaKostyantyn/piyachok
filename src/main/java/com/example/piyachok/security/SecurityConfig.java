@@ -32,6 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private UserDAO userDAO;
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -71,12 +72,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http = http.cors().configurationSource(corsConfigurationSource()).and();
         http = http.authorizeHttpRequests()
                 .antMatchers(HttpMethod.GET, "/").permitAll()
-                .antMatchers(HttpMethod.POST, "/register").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .antMatchers(HttpMethod.POST, "/main/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
-                .antMatchers(HttpMethod.GET,"/users/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
-                .antMatchers(HttpMethod.DELETE,"/users/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
+                .antMatchers(HttpMethod.POST, "/register").permitAll()
                 .antMatchers(HttpMethod.POST,"/refresh").permitAll()
+                .antMatchers(HttpMethod.GET,"/main/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
+                .antMatchers(HttpMethod.POST,"/main/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
+                .antMatchers(HttpMethod.PUT,"/main/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
+                .antMatchers(HttpMethod.DELETE,"/main/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
+                .antMatchers(HttpMethod.GET,"/users").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
                 .and();
         http = http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
 

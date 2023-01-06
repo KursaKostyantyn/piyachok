@@ -42,4 +42,17 @@ public class User {
     )
     @ToString.Exclude
     private List<Place> places;
+
+    public User(String login, String firstName, String lastName, String password, LocalDate birthDate, String email, Role role, boolean isActivated, boolean isBlocked, List<Place> places) {
+        this.login = login;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.birthDate = birthDate;
+        this.email = email;
+        this.role = role;
+        this.isActivated = isActivated;
+        this.isBlocked = isBlocked;
+        this.places = places;
+    }
 }

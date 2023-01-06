@@ -31,4 +31,10 @@ public class News {
     @JsonBackReference
     @ToString.Exclude
     private Place place;
+
+    public News(Category category, boolean isPaid, String text) {
+        this.category = category;
+        this.isPaid = isPaid;
+        this.text = text;
+    }
 }

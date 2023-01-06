@@ -26,4 +26,13 @@ public class WorkSchedule {
     String saturday;
     String sunday;
 
+    public WorkSchedule(String monday, String tuesday, String wednesday, String thursday, String friday, String saturday, String sunday) {
+        this.monday = monday;
+        this.tuesday = tuesday;
+        this.wednesday = wednesday;
+        this.thursday = thursday;
+        this.friday = friday;
+        this.saturday = saturday;
+        this.sunday = sunday;
+    }
 }

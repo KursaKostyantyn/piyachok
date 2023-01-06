@@ -25,7 +25,8 @@ public class NewsService {
                 news.isPaid(),
                 news.getCreationDate(),
                 news.getText(),
-                news.getPlace().getId()
+                news.getPlace().getId(),
+                news.getPlace().getName()
         );
     }
 

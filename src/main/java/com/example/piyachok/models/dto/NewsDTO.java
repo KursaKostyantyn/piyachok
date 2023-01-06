@@ -20,6 +20,6 @@ public class NewsDTO {
     private boolean isPaid;
     private LocalDate creationDate;
     private String text;
-    @ToString.Exclude
     private int placeId;
+    private String placeName;
 }

@@ -2,6 +2,8 @@ package com.example.piyachok.controllers.filters;
 
 import com.example.piyachok.dao.UserDAO;
 import com.example.piyachok.models.User;
+import com.example.piyachok.security.JwtUtils;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,8 +20,8 @@ import java.util.Collections;
 
 @AllArgsConstructor
 public class CustomFilter extends OncePerRequestFilter {
-
     private UserDAO userDAO;
+
 
     @Override
     protected void doFilterInternal(
@@ -30,22 +32,27 @@ public class CustomFilter extends OncePerRequestFilter {
         String authorization = request.getHeader("Authorization");
         if (authorization != null && authorization.startsWith("Bearer")) {
             String token = authorization.replace("Bearer ", "");
-            String subject = Jwts.parser()
-                    .setSigningKey("secretKey".getBytes())
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
-            User userByLogin = userDAO.findUserByLogin(subject);
-            if (userByLogin != null) {
-                SecurityContextHolder
-                        .getContext()
-                        .setAuthentication(
-                                new UsernamePasswordAuthenticationToken(
-                                        userByLogin.getLogin(),
-                                        userByLogin.getPassword(),
-                                        Collections.singletonList(new SimpleGrantedAuthority(userByLogin.getRole().name()))
-                                )
-                        );
+            try {
+                String subject = Jwts.parser()
+                        .setSigningKey("secretKey".getBytes())
+                        .parseClaimsJws(token)
+                        .getBody()
+                        .getSubject();
+                User userByLogin = userDAO.findUserByLogin(subject);
+                if (userByLogin != null) {
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(
+                                    new UsernamePasswordAuthenticationToken(
+                                            userByLogin.getLogin(),
+                                            userByLogin.getPassword(),
+                                            Collections.singletonList(new SimpleGrantedAuthority(userByLogin.getRole().name()))
+                                    )
+                            );
+                }
+            } catch (ExpiredJwtException e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "expired");
+                return;
             }
         }
         filterChain

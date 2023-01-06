@@ -64,5 +64,16 @@ public class Place {
     @ToString.Exclude
     private List<News> news;
 
-
+    public Place(String name, String photo, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck, String type, List<News> news) {
+        this.name = name;
+        this.photo = photo;
+        this.address = address;
+        this.workSchedule = workSchedule;
+        this.isActivated = isActivated;
+        this.description = description;
+        this.contacts = contacts;
+        this.averageCheck = averageCheck;
+        this.type = type;
+        this.news = news;
+    }
 }

@@ -19,7 +19,7 @@ public class RefreshTokenService {
     private RefreshTokenDAO refreshTokenDAO;
     private UserDAO userDAO;
 
-    public Optional<RefreshToken> findRefreshTokenByToken(String token) {
+    public RefreshToken findRefreshTokenByToken(String token) {
         return refreshTokenDAO.findRefreshTokenByToken(token);
     }
 
@@ -33,12 +33,12 @@ public class RefreshTokenService {
         return refreshToken;
     }
 
-    public RefreshToken verifyExpiration(RefreshToken token) {
+    public boolean verifyExpiration(RefreshToken token) {
         if (token.getExpirationDate().compareTo(Instant.now()) < 0) {
             refreshTokenDAO.delete(token);
             throw new RefreshTokenException(token.getToken(), "Refresh token was expired. Please make a new signing request");
         }
-        return token;
+        return true;
     }
 
     public void deleteByUserId(int id) {

@@ -18,30 +18,33 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("")
+
 @AllArgsConstructor
 public class UserController {
     private UserService userService;
 
+    @PostMapping("/register")
+    public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
+        return userService.saveUser(userDTO);
+    }
 
 
-
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("users/{id}")
     public ResponseEntity<HttpStatus> deleteUserById(@PathVariable int id) {
         return userService.deleteUserById(id);
     }
 
-    @GetMapping("/users")
+    @GetMapping("users")
     public ResponseEntity<List<UserDTO>> findAllUsers() {
         return userService.findAllUsers();
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("users/{id}")
     public ResponseEntity<UserDTO> findUserById(@PathVariable int id) {
         return userService.findUserByID(id);
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("users/{id}")
     public ResponseEntity<UserDTO> updateUserById(@PathVariable int id, @RequestBody User user) {
         return userService.updateUserById(id, user);
     }

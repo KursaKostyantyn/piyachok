@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @ToString
 public class JwtResponseDTO {
-    private String jwtToken;
+    private String accessToken;
     private String refreshToken;
     private User user;
 }

@@ -1,5 +1,6 @@
 package com.example.piyachok.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
@@ -16,4 +17,5 @@ public class JwtUtils {
                 .setExpiration(new Date(System.currentTimeMillis() + 50000))
                 .compact();
     }
+
 }

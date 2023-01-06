@@ -30,9 +30,6 @@ public class AuthService {
 
     private AuthenticationManager authenticationManager;
 
-    public ResponseEntity<UserDTO> saveUser(UserDTO userDTO) {
-        return userService.saveUser(userDTO);
-    }
 
     public ResponseEntity<JwtResponseDTO> login(User user) {
         Authentication authenticate = authenticationManager.authenticate(
@@ -42,24 +39,24 @@ public class AuthService {
             String jwtToken = jwtUtils.generateTokenFromUsername(authenticate.getName());
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + jwtToken);
-            System.out.println("user.getLogin() = " + user.getLogin());
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getLogin());
+            System.out.println(new JwtResponseDTO(jwtToken, refreshToken.getToken(), user));
             return new ResponseEntity<>(new JwtResponseDTO(jwtToken, refreshToken.getToken(), user), headers, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    public ResponseEntity<JwtResponseDTO> refreshToken(RefreshTokenRequest request) {
-        String refreshTokenRequest = request.getRefreshToken();
-        return refreshTokenService.findRefreshTokenByToken(refreshTokenRequest)
-                .map(token -> refreshTokenService.verifyExpiration(token))
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    String token = jwtUtils.generateTokenFromUsername(user.getLogin());
-                    String refreshToken = refreshTokenService.createRefreshToken(user.getLogin()).getToken();
-                    return new ResponseEntity<>(new JwtResponseDTO(token,refreshToken,user),HttpStatus.OK);
-                })
-                .orElseThrow(() -> new RefreshTokenException(refreshTokenRequest, "Refresh token is not in database!"));
+    public ResponseEntity<JwtResponseDTO> refreshToken(RefreshToken refreshTokenRequest) {
+        System.out.println(refreshTokenRequest);
+        RefreshToken token = refreshTokenService.findRefreshTokenByToken(refreshTokenRequest.getToken());
+        System.out.println(token);
+        if(token.getToken()!=null && refreshTokenService.verifyExpiration(token)){
+            User user = token.getUser();
+            String newAccessToken = jwtUtils.generateTokenFromUsername(user.getLogin());
+            String newRefreshToken = refreshTokenService.createRefreshToken(user.getLogin()).getToken();
+            return new ResponseEntity<>(new JwtResponseDTO(newAccessToken,newRefreshToken,user), HttpStatus.OK);
+        }
+        throw  new RefreshTokenException(refreshTokenRequest.getToken(), "Refresh token is not in database!");
     }
 
 
