@@ -19,6 +19,7 @@ public class RefreshTokenService {
     private RefreshTokenDAO refreshTokenDAO;
     private UserDAO userDAO;
 
+
     public RefreshToken findRefreshTokenByToken(String token) {
         return refreshTokenDAO.findRefreshTokenByToken(token);
     }
@@ -30,6 +31,7 @@ public class RefreshTokenService {
         refreshToken.setExpirationDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());
         refreshTokenDAO.save(refreshToken);
+
         return refreshToken;
     }
 

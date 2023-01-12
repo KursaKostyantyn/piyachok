@@ -28,9 +28,19 @@ public class News {
             joinColumns = @JoinColumn(name = "news_id"),
             inverseJoinColumns = @JoinColumn(name = "place_id")
     )
-    @JsonBackReference
+    @JsonBackReference(value = "place-news")
     @ToString.Exclude
     private Place place;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "users_news",
+            joinColumns = @JoinColumn(name = "news_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @JsonBackReference(value = "user-news")
+    @ToString.Exclude
+    private User user;
 
     public News(Category category, boolean isPaid, String text) {
         this.category = category;

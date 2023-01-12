@@ -22,13 +22,7 @@ public class PlaceService {
     private PlaceDAO placeDAO;
     private UserDAO userDAO;
 
-    private PlaceDTO convertPlaceToPlaceDTO(Place place) {
-        List<Integer> newsIds =new ArrayList<>();
-        if(place.getNews().size()!=0){
-            newsIds= place.getNews().stream().map(News::getId).collect(Collectors.toList());
-        }
-
-
+    public PlaceDTO convertPlaceToPlaceDTO(Place place) {
 
         return new PlaceDTO(
                 place.getId(),
@@ -43,15 +37,14 @@ public class PlaceService {
                 place.getCreationDate(),
                 place.getType(),
                 place.getUser().getId(),
-                newsIds
+                place.getNews()
 
         );
     }
 
-    public ResponseEntity<PlaceDTO> savePlace(int userId,Place place) {
-        User user=userDAO.findById(userId).orElse(new User());
-        System.out.println("id=" + userId + user);
-        if (place != null && user.getLogin()!=null) {
+    public ResponseEntity<PlaceDTO> savePlace(int userId, Place place) {
+        User user = userDAO.findById(userId).orElse(new User());
+        if (place != null && user.getLogin() != null) {
             place.setUser(user);
             place.setNews(new ArrayList<>());
             placeDAO.save(place);
@@ -95,9 +88,9 @@ public class PlaceService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public boolean addPlaceNews(int placeId,News news){
-        Place place=placeDAO.findById(placeId).orElse(new Place());
-        if (place.getName()!=null){
+    public boolean addPlaceNews(int placeId, News news) {
+        Place place = placeDAO.findById(placeId).orElse(new Place());
+        if (place.getName() != null) {
             place.getNews().add(news);
             placeDAO.save(place);
             news.setPlace(place);

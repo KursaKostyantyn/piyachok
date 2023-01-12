@@ -74,12 +74,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
                 .antMatchers(HttpMethod.POST, "/register").permitAll()
-                .antMatchers(HttpMethod.POST,"/refresh").permitAll()
-                .antMatchers(HttpMethod.GET,"/main/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
-                .antMatchers(HttpMethod.POST,"/main/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
-                .antMatchers(HttpMethod.PUT,"/main/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
-                .antMatchers(HttpMethod.DELETE,"/main/**").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
-                .antMatchers(HttpMethod.GET,"/users").hasAnyRole(Role.ROLE_ADMIN.getUserRole())
+                .antMatchers(HttpMethod.POST, "/refresh").permitAll()
+                .antMatchers(HttpMethod.GET, "/main/**").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(),Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
+                .antMatchers(HttpMethod.GET, "/users").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(),Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
+                .antMatchers(HttpMethod.GET, "/getAuthorizedUser").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(),Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
+                .antMatchers(HttpMethod.GET, "/myCabinet").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(),Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
                 .and();
         http = http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
 

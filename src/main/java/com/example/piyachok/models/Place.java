@@ -41,7 +41,7 @@ public class Place {
     private Contact contacts;
 
     private int averageCheck;
-    private LocalDate creationDate =LocalDate.now();
+    private LocalDate creationDate = LocalDate.now();
     private String type;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
@@ -55,7 +55,7 @@ public class Place {
     private User user;
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference(value = "place-news")
     @JoinTable(
             name = "places_news",
             joinColumns = @JoinColumn(name = "place_id"),
@@ -63,6 +63,27 @@ public class Place {
     )
     @ToString.Exclude
     private List<News> news;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "places_comments",
+            joinColumns = @JoinColumn(name = "place_id"),
+            inverseJoinColumns = @JoinColumn(name = "comment_id")
+    )
+    @JsonManagedReference(value = "place-comment")
+    @ToString.Exclude
+    private List<Comment> comments;
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "places_rating",
+            joinColumns = @JoinColumn(name = "place_id"),
+            inverseJoinColumns = @JoinColumn(name = "rating_id")
+    )
+    @JsonManagedReference(value = "place-rating")
+    @ToString.Exclude
+    private List<Rating> ratings;
+
 
     public Place(String name, String photo, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck, String type, List<News> news) {
         this.name = name;
@@ -75,5 +96,17 @@ public class Place {
         this.averageCheck = averageCheck;
         this.type = type;
         this.news = news;
+    }
+
+    public Place(String name, String photo, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck, String type) {
+        this.name = name;
+        this.photo = photo;
+        this.address = address;
+        this.workSchedule = workSchedule;
+        this.isActivated = isActivated;
+        this.description = description;
+        this.contacts = contacts;
+        this.averageCheck = averageCheck;
+        this.type = type;
     }
 }

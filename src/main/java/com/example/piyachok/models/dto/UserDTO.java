@@ -1,6 +1,7 @@
 package com.example.piyachok.models.dto;
 
 import com.example.piyachok.constants.Role;
+import com.example.piyachok.models.News;
 import com.example.piyachok.models.Place;
 import lombok.*;
 
@@ -26,8 +27,9 @@ public class UserDTO {
     private boolean isBlocked;
     private LocalDate creationDate;
     private List<Place> places;
+    private List<News> news;
 
-    public UserDTO(int id, String login, String firstName, String lastName, LocalDate birthDate, String email, Role role, boolean isActivated, boolean isBlocked, LocalDate creationDate, List<Place> places) {
+    public UserDTO(int id, String login, String firstName, String lastName, LocalDate birthDate, String email, Role role, boolean isActivated, boolean isBlocked, LocalDate creationDate, List<Place> places, List<News> news) {
         this.id = id;
         this.login = login;
         this.firstName = firstName;
@@ -39,5 +41,7 @@ public class UserDTO {
         this.isBlocked = isBlocked;
         this.creationDate = creationDate;
         this.places = places;
+        this.news = news;
     }
+
 }

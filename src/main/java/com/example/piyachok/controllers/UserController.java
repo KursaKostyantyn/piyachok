@@ -1,24 +1,16 @@
 package com.example.piyachok.controllers;
 
 import com.example.piyachok.models.User;
-import com.example.piyachok.models.dto.JwtResponseDTO;
 import com.example.piyachok.models.dto.UserDTO;
 import com.example.piyachok.services.UserService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-
 @AllArgsConstructor
 public class UserController {
     private UserService userService;
@@ -48,6 +40,7 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUserById(@PathVariable int id, @RequestBody User user) {
         return userService.updateUserById(id, user);
     }
+
 
 
 }

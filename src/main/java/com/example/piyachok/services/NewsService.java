@@ -47,28 +47,27 @@ public class NewsService {
 
         if (placeService.addPlaceNews(placeId, news)) {
             newsDAO.save(news);
-            System.out.println("news" + news.getPlace());
             return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<NewsDTO> findNewsByID (int id){
+    public ResponseEntity<NewsDTO> findNewsByID(int id) {
         News news = newsDAO.findById(id).orElse(new News());
-        if (news.getText()!=null){
-            return new ResponseEntity<>(convertNewsToNewsDTO(news),HttpStatus.OK);
+        if (news.getText() != null) {
+            return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<List<NewsDTO>> findMainNews(){
+    public ResponseEntity<List<NewsDTO>> findMainNews() {
         List<NewsDTO> newsDTOList = newsDAO.findAll()
                 .stream()
-                .filter(news -> news.getCategory()== Category.MAIN)
+                .filter(news -> news.getCategory() == Category.MAIN)
                 .map(this::convertNewsToNewsDTO)
                 .collect(Collectors.toList());
-        if (newsDTOList.size()!=0){
-            return new ResponseEntity<>(newsDTOList,HttpStatus.OK);
+        if (newsDTOList.size() != 0) {
+            return new ResponseEntity<>(newsDTOList, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

@@ -43,7 +43,39 @@ public class User {
     @ToString.Exclude
     private List<Place> places;
 
-    public User(String login, String firstName, String lastName, String password, LocalDate birthDate, String email, Role role, boolean isActivated, boolean isBlocked, List<Place> places) {
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "user-news")
+    @JoinTable(
+            name = "users_news",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "news_id")
+    )
+    @ToString.Exclude
+    private List<News> news;
+
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "users_comments",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "comment_id")
+    )
+    @JsonManagedReference(value = "user-comment")
+    @ToString.Exclude
+    private List<Comment> comments;
+
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "users_rating",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "rating_id")
+    )
+    @JsonManagedReference(value = "user-rating")
+    @ToString.Exclude
+    private List<Rating> ratings;
+
+
+
+    public User(String login, String firstName, String lastName, String password, LocalDate birthDate, String email, Role role, boolean isActivated, boolean isBlocked, List<Place> places, List<News> news) {
         this.login = login;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -54,5 +86,6 @@ public class User {
         this.isActivated = isActivated;
         this.isBlocked = isBlocked;
         this.places = places;
+        this.news=news;
     }
 }

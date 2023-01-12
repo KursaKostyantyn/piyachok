@@ -28,6 +28,6 @@ public class PlaceDTO {
     private LocalDate creationDate;
     private String type;
     private int  userId;
-    private List<Integer> newsIds;
+    private List<News> news;
 
 }

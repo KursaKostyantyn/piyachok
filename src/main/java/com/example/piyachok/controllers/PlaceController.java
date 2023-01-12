@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/main/places")
-@CrossOrigin
 public class PlaceController {
 
     private PlaceService placeService;
