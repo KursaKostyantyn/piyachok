@@ -75,7 +75,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
                 .antMatchers(HttpMethod.POST, "/register").permitAll()
                 .antMatchers(HttpMethod.POST, "/refresh").permitAll()
-                .antMatchers(HttpMethod.GET, "/main/**").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(),Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
+                .antMatchers(HttpMethod.GET, "/main/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/users").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(),Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
                 .antMatchers(HttpMethod.GET, "/getAuthorizedUser").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(),Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
                 .antMatchers(HttpMethod.GET, "/myCabinet").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(),Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
@@ -90,7 +90,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(username ->
                 {
-                    User userByLogin = userDAO.findUserByLogin(username);
+                    User userByLogin = userDAO.findUserByLogin(username).orElse(new User());
                     return new org.springframework.security.core.userdetails.User(
                             userByLogin.getLogin(),
                             userByLogin.getPassword(),

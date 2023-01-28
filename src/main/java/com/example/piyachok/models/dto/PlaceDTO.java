@@ -26,7 +26,7 @@ public class PlaceDTO {
     private Contact contacts;
     private int averageCheck;
     private LocalDate creationDate;
-    private String type;
+    private List<Type> types;
     private int  userId;
     private List<News> news;
 

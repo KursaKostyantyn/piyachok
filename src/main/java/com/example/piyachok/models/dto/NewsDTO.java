@@ -22,4 +22,6 @@ public class NewsDTO {
     private String text;
     private int placeId;
     private String placeName;
+    private int userId;
+    private String userLogin;
 }

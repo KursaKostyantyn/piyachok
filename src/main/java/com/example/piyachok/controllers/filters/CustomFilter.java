@@ -38,8 +38,8 @@ public class CustomFilter extends OncePerRequestFilter {
                         .parseClaimsJws(token)
                         .getBody()
                         .getSubject();
-                User userByLogin = userDAO.findUserByLogin(subject);
-                if (userByLogin != null) {
+                User userByLogin = userDAO.findUserByLogin(subject).orElse(new User());
+                if (userByLogin.getLogin() != null) {
                     SecurityContextHolder
                             .getContext()
                             .setAuthentication(

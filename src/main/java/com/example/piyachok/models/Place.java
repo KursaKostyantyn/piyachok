@@ -1,7 +1,6 @@
 package com.example.piyachok.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -42,9 +41,17 @@ public class Place {
 
     private int averageCheck;
     private LocalDate creationDate = LocalDate.now();
-    private String type;
+    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "places_types",
+            joinColumns = @JoinColumn(name = "place_id"),
+            inverseJoinColumns = @JoinColumn(name = "type_id")
+    )
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Type> types;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_places",
             joinColumns = @JoinColumn(name = "place_id"),
@@ -54,7 +61,7 @@ public class Place {
     @ToString.Exclude
     private User user;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "place-news")
     @JoinTable(
             name = "places_news",
@@ -84,8 +91,18 @@ public class Place {
     @ToString.Exclude
     private List<Rating> ratings;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "favoritePlaces_places",
+            joinColumns = @JoinColumn(name = "place_id"),
+            inverseJoinColumns = @JoinColumn(name = "favoritePlace_id")
+    )
 
-    public Place(String name, String photo, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck, String type, List<News> news) {
+    @ToString.Exclude
+    private List<FavoritePlace> favoritePlaces;
+
+
+    public Place(String name, String photo, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck, List<Type> types, List<News> news) {
         this.name = name;
         this.photo = photo;
         this.address = address;
@@ -94,11 +111,11 @@ public class Place {
         this.description = description;
         this.contacts = contacts;
         this.averageCheck = averageCheck;
-        this.type = type;
+        this.types = types;
         this.news = news;
     }
 
-    public Place(String name, String photo, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck, String type) {
+    public Place(String name, String photo, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck) {
         this.name = name;
         this.photo = photo;
         this.address = address;
@@ -107,6 +124,6 @@ public class Place {
         this.description = description;
         this.contacts = contacts;
         this.averageCheck = averageCheck;
-        this.type = type;
+
     }
 }

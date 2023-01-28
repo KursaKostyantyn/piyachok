@@ -1,6 +1,8 @@
 package com.example.piyachok.services;
 
 import com.example.piyachok.dao.UserDAO;
+import com.example.piyachok.models.News;
+import com.example.piyachok.models.Place;
 import com.example.piyachok.models.User;
 import com.example.piyachok.models.dto.UserDTO;
 import lombok.AllArgsConstructor;
@@ -79,12 +81,38 @@ public class UserService {
     public ResponseEntity<UserDTO> updateUserById(int id, User user) {
         User oldUser = userDAO.findById(id).orElse(new User());
         if (oldUser.getLogin() != null) {
-            user.setId(id);
-            userDAO.save(user);
-            return new ResponseEntity<>(convertUserToUserDTO(user), HttpStatus.OK);
+            System.out.println("user = " + user);
+            if (!user.getPassword().equals("")) {
+                System.out.println("user.getPassword() = " + user.getPassword());
+                oldUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+            oldUser.setFirstName(user.getFirstName());
+            oldUser.setLastName(user.getLastName());
+            oldUser.setBirthDate(user.getBirthDate());
+            oldUser.setEmail(user.getEmail());
+            oldUser.setRole(user.getRole());
+            oldUser.setActivated(user.isActivated());
+            oldUser.setBlocked(user.isBlocked());
+
+
+            userDAO.save(oldUser);
+            return new ResponseEntity<>(convertUserToUserDTO(oldUser), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    public boolean addNewsToUser(String login, News news) {
+        User user = userDAO.findUserByLogin(login).orElse(new User());
+        if (user.getLogin() != null) {
+            user.getNews().add(news);
+            //todo delete?
+//            userDAO.save(user);
+            news.setUser(user);
+            return true;
+        }
+        return false;
+    }
+
 
 
 

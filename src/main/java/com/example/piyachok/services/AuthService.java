@@ -40,7 +40,7 @@ public class AuthService {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + jwtToken);
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getLogin());
-            user = userDAO.findUserByLogin(user.getLogin());
+            user = userDAO.findUserByLogin(user.getLogin()).orElse(new User());
              return new ResponseEntity<>(new JwtResponseDTO(jwtToken, refreshToken.getToken(), userService.convertUserToUserDTO(user)), headers, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -52,6 +52,7 @@ public class AuthService {
             User user = token.getUser();
             String newAccessToken = jwtUtils.generateTokenFromUsername(user.getLogin());
             String newRefreshToken = refreshTokenService.createRefreshToken(user.getLogin()).getToken();
+            System.out.println("here");
             return new ResponseEntity<>(new JwtResponseDTO(newAccessToken,newRefreshToken,userService.convertUserToUserDTO(user)), HttpStatus.OK);
         }
         throw  new RefreshTokenException(refreshTokenRequest.getToken(), "Refresh token is not in database!");
@@ -59,7 +60,7 @@ public class AuthService {
 
     public ResponseEntity<UserDTO> getAuthorizedUser(){
         String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User userByLogin = userDAO.findUserByLogin(currentUserName);
+        User userByLogin = userDAO.findUserByLogin(currentUserName).orElse(new User());
         if(userByLogin.getLogin()!=null){
             return new ResponseEntity<>(userService.convertUserToUserDTO(userByLogin),HttpStatus.OK);
         }

@@ -27,7 +27,8 @@ public class RefreshTokenService {
     public RefreshToken createRefreshToken(String login) {
         long refreshTokenDurationMs = 5000000;
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUser(userDAO.findUserByLogin(login));
+        User user=userDAO.findUserByLogin(login).orElse(new User());
+        refreshToken.setUser(user);
         refreshToken.setExpirationDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());
         refreshTokenDAO.save(refreshToken);

@@ -16,8 +16,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy ="refreshToken" )
     private User user;
 
     @Column(nullable = false,unique = true)

@@ -3,6 +3,8 @@ package com.example.piyachok.services;
 import com.example.piyachok.constants.Category;
 import com.example.piyachok.constants.Role;
 import com.example.piyachok.dao.FavoritePlacesDAO;
+import com.example.piyachok.dao.PlaceDAO;
+import com.example.piyachok.dao.TypeDAO;
 import com.example.piyachok.dao.UserDAO;
 import com.example.piyachok.models.*;
 import lombok.AllArgsConstructor;
@@ -12,17 +14,18 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class AutoFilling {
+public class AutoFillingService {
 
     private UserDAO userDAO;
+    private PlaceDAO placeDAO;
     private PasswordEncoder passwordEncoder;
     private FavoritePlacesDAO favoritePlacesDAO;
+
+    private TypeDAO typeDAO;
 
     @Bean
     public void autoSaveEntities() {
@@ -33,10 +36,11 @@ public class AutoFilling {
                 && userDAO.findUserByLogin("admin4") == null
         ) {
             System.out.println("autoFilling started");
+            List<Type> types = autoCreateListOfTypes();
             for (int i = 0; i < 5; i++) {
-                autoFillingEntity(i);
+                autoFillingEntity(i, types);
             }
-
+            addTypesToPlaces(types);
         }
     }
 
@@ -55,9 +59,30 @@ public class AutoFilling {
         return newsList;
     }
 
+    public void addTypesToPlaces(List<Type> types){
+        List<Place> places = placeDAO.findAll();
+        int num = 0;
+        for (Place place : places) {
+            if (num ==5){
+                num = 0;
+            }
+            Type type = types.get(num);
+            place.getTypes().add(types.get(num));
+            placeDAO.save(place);
+            typeDAO.save(type);
+            num++;
+        }
+    }
+
     public Place autoCreatePlace(int number) {
         Address address = new Address("Kiev", "Hreshatik", 17 + number);
-        WorkSchedule workSchedule = new WorkSchedule("09:00-18:00", "09:00-18:00", "09:00-18:00", "09:00-18:00", "09:00-18:00", "09:00-18:00", "09:00-18:00");
+        WorkSchedule workSchedule = new WorkSchedule("09:00", "18:00",
+                "09:00", "18:00",
+                "09:00", "18:00",
+                "09:00", "18:00",
+                "09:00", "18:00",
+                "09:00", "18:00",
+                "09:00", "18:00");
         Contact contact = new Contact("1234567890", "test@test.com");
 
         Place place = new Place("This is Pivbar" + number,
@@ -66,13 +91,18 @@ public class AutoFilling {
                 true,
                 "Description Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris lacinia ex nunc, sit amet euismod metus aliquet et. Sed sed.",
                 contact,
-                580,
-                "bar");
+                580);
+        place.setTypes(new ArrayList<>());
+        place.setFavoritePlaces(new ArrayList<>());
         return place;
     }
 
-    public void autoFillingFavoritePlaces(int userId, int placeId) {
-        favoritePlacesDAO.save(new FavoritePlaces(userId, placeId));
+    public void autoFillingFavoritePlaces(User user, Place place) {
+        FavoritePlace favoritePlace= new FavoritePlace(new ArrayList<>(),new ArrayList<>());
+        favoritePlace.getPlaces().add(place);
+        favoritePlace.getUsers().add(user);
+        place.getFavoritePlaces().add(favoritePlace);
+        user.getFavoritePlacesEntity().add(favoritePlace);
     }
 
     public List<Comment> autoCreateComments() {
@@ -91,7 +121,7 @@ public class AutoFilling {
         return rating;
     }
 
-    public void autoFillingEntity(int number) {
+    public void autoFillingEntity(int number, List<Type> types) {
         List<Place> placeList = new ArrayList<>();
         List<News> newsList = new ArrayList<>();
         List<Comment> commentsList = new ArrayList<>();
@@ -125,11 +155,11 @@ public class AutoFilling {
                     newsList);
             user.setComments(commentsList);
             user.setRatings(ratings);
-            userDAO.save(user);
+            user.setFavoritePlacesEntity(new ArrayList<>());
             for (Place place : placeList) {
-
-                autoFillingFavoritePlaces(user.getId(), place.getId());
+                autoFillingFavoritePlaces(user, place);
             }
+            userDAO.save(user);
 
         } else {
             User user = new User("admin" + number,
@@ -144,10 +174,33 @@ public class AutoFilling {
                     newsList);
             user.setComments(commentsList);
             user.setRatings(ratings);
-            userDAO.save(user);
+            user.setFavoritePlacesEntity(new ArrayList<>());
             for (Place place : placeList) {
-                autoFillingFavoritePlaces(user.getId(), place.getId());
+                autoFillingFavoritePlaces(user, place);
             }
+            userDAO.save(user);
         }
     }
+
+    public List<Type> autoCreateListOfTypes() {
+        List<Type> types = new ArrayList<>();
+        Type typeBar = new Type("Bar",new ArrayList<>());
+        Type typePub = new Type("Pub",new ArrayList<>());
+        Type typeRestaurant = new Type("Restaurant",new ArrayList<>());
+        Type typeDisco = new Type("Disco",new ArrayList<>());
+        Type typeCaffe = new Type("Caffe",new ArrayList<>());
+        typeDAO.save(typeBar);
+        typeDAO.save(typePub);
+        typeDAO.save(typeRestaurant);
+        typeDAO.save(typeDisco);
+        typeDAO.save(typeCaffe);
+        types.add(typeBar);
+        types.add(typePub);
+        types.add(typeRestaurant);
+        types.add(typeDisco);
+        types.add(typeCaffe);
+        return types;
+    }
+
+
 }

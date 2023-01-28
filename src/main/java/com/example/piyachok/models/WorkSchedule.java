@@ -18,21 +18,35 @@ public class WorkSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    String monday;
-    String tuesday;
-    String wednesday;
-    String thursday;
-    String friday;
-    String saturday;
-    String sunday;
+    String mondayStart;
+    String mondayEnd;
+    String tuesdayStart;
+    String tuesdayEnd;
+    String wednesdayStart;
+    String wednesdayEnd;
+    String thursdayStart;
+    String thursdayEnd;
+    String fridayStart;
+    String fridayEnd;
+    String saturdayStart;
+    String saturdayEnd;
+    String sundayStart;
+    String sundayEnd;
 
-    public WorkSchedule(String monday, String tuesday, String wednesday, String thursday, String friday, String saturday, String sunday) {
-        this.monday = monday;
-        this.tuesday = tuesday;
-        this.wednesday = wednesday;
-        this.thursday = thursday;
-        this.friday = friday;
-        this.saturday = saturday;
-        this.sunday = sunday;
+    public WorkSchedule(String mondayStart, String mondayEnd, String tuesdayStart, String tuesdayEnd, String wednesdayStart, String wednesdayEnd, String thursdayStart, String thursdayEnd, String fridayStart, String fridayEnd, String saturdayStart, String saturdayEnd, String sundayStart, String sundayEnd) {
+        this.mondayStart = mondayStart;
+        this.mondayEnd = mondayEnd;
+        this.tuesdayStart = tuesdayStart;
+        this.tuesdayEnd = tuesdayEnd;
+        this.wednesdayStart = wednesdayStart;
+        this.wednesdayEnd = wednesdayEnd;
+        this.thursdayStart = thursdayStart;
+        this.thursdayEnd = thursdayEnd;
+        this.fridayStart = fridayStart;
+        this.fridayEnd = fridayEnd;
+        this.saturdayStart = saturdayStart;
+        this.saturdayEnd = saturdayEnd;
+        this.sundayStart = sundayStart;
+        this.sundayEnd = sundayEnd;
     }
 }

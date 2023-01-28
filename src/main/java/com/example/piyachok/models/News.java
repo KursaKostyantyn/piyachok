@@ -22,7 +22,7 @@ public class News {
     private LocalDate creationDate = LocalDate.now();
     private String text;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "places_news",
             joinColumns = @JoinColumn(name = "news_id"),
@@ -32,7 +32,7 @@ public class News {
     @ToString.Exclude
     private Place place;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_news",
             joinColumns = @JoinColumn(name = "news_id"),

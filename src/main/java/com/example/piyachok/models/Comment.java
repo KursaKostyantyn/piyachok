@@ -17,7 +17,7 @@ public class Comment {
     private int id;
     private String text;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "places_comments",
             joinColumns = @JoinColumn(name = "comment_id"),
@@ -27,7 +27,7 @@ public class Comment {
     @ToString.Exclude
     private Place place;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_comments",
             joinColumns = @JoinColumn(name = "comment_id"),

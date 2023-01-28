@@ -42,7 +42,7 @@ public class CommentService {
     }
 
     public ResponseEntity<List<CommentDTO>> findCommentsByUserLogin(String login) {
-        User user = userDAO.findUserByLogin(login);
+        User user = userDAO.findUserByLogin(login).orElse(new User());
         if (user.getLogin() != null) {
             List<CommentDTO> usersComments = commentDAO.findAllByUser(user)
                     .stream()
@@ -50,6 +50,14 @@ public class CommentService {
                     .collect(Collectors.toList());
             return new ResponseEntity<>(usersComments, HttpStatus.OK);
 
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<CommentDTO> findCommentById(int id) {
+        Comment comment = commentDAO.findById(id).orElse(new Comment());
+        if(comment.getId()!=0){
+            return new ResponseEntity<>(convertCommentToCommentDTO(comment),HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

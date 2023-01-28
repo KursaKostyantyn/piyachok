@@ -1,6 +1,7 @@
 package com.example.piyachok.controllers;
 
 import com.example.piyachok.models.Place;
+import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.PlaceDTO;
 import com.example.piyachok.services.PlaceService;
 import lombok.AllArgsConstructor;
@@ -8,7 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 @AllArgsConstructor
 @RestController
@@ -23,13 +25,14 @@ public class PlaceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deletePlaceById(@PathVariable int id) {
+    public ResponseEntity<Integer> deletePlaceById(@PathVariable int id) {
         return placeService.deletePlaceById(id);
     }
 
     @GetMapping("")
-    public ResponseEntity<List<PlaceDTO>> findAllPlaces() {
-        return placeService.findAllPlaces();
+    public ResponseEntity<ItemListDTO<PlaceDTO>> findAllPlaces(@RequestParam(required = false) int page) {
+        System.out.println(page);
+        return placeService.findAllPlaces(page);
     }
 
     @GetMapping("/{id}")

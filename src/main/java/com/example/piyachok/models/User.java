@@ -1,7 +1,6 @@
 package com.example.piyachok.models;
 
 import com.example.piyachok.constants.Role;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -72,6 +71,24 @@ public class User {
     @JsonManagedReference(value = "user-rating")
     @ToString.Exclude
     private List<Rating> ratings;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "refreshToken_id", referencedColumnName = "id")
+    private RefreshToken refreshToken;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "favoritePlaces_users",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "favoritePlace_id")
+    )
+    @ToString.Exclude
+    private List<FavoritePlace> favoritePlacesEntity;
+
+    @OneToMany
+    private List<Place> favoritePlaces;
+
+
 
 
 
