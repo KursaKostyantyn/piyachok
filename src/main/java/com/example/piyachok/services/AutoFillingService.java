@@ -2,7 +2,6 @@ package com.example.piyachok.services;
 
 import com.example.piyachok.constants.Category;
 import com.example.piyachok.constants.Role;
-import com.example.piyachok.dao.FavoritePlacesDAO;
 import com.example.piyachok.dao.PlaceDAO;
 import com.example.piyachok.dao.TypeDAO;
 import com.example.piyachok.dao.UserDAO;
@@ -23,17 +22,17 @@ public class AutoFillingService {
     private UserDAO userDAO;
     private PlaceDAO placeDAO;
     private PasswordEncoder passwordEncoder;
-    private FavoritePlacesDAO favoritePlacesDAO;
+
 
     private TypeDAO typeDAO;
 
     @Bean
     public void autoSaveEntities() {
-        if (userDAO.findUserByLogin("admin") == null
-                && userDAO.findUserByLogin("admin1") == null
-                && userDAO.findUserByLogin("admin2") == null
-                && userDAO.findUserByLogin("admin3") == null
-                && userDAO.findUserByLogin("admin4") == null
+        if (userDAO.findUserByLogin("admin").orElse(new User()).getLogin() == null
+                && userDAO.findUserByLogin("admin1").orElse(new User()).getLogin() == null
+                && userDAO.findUserByLogin("admin2").orElse(new User()).getLogin() == null
+                && userDAO.findUserByLogin("admin3").orElse(new User()).getLogin() == null
+                && userDAO.findUserByLogin("admin4").orElse(new User()).getLogin() == null
         ) {
             System.out.println("autoFilling started");
             List<Type> types = autoCreateListOfTypes();
@@ -59,11 +58,11 @@ public class AutoFillingService {
         return newsList;
     }
 
-    public void addTypesToPlaces(List<Type> types){
+    public void addTypesToPlaces(List<Type> types) {
         List<Place> places = placeDAO.findAll();
         int num = 0;
         for (Place place : places) {
-            if (num ==5){
+            if (num == 5) {
                 num = 0;
             }
             Type type = types.get(num);
@@ -93,17 +92,9 @@ public class AutoFillingService {
                 contact,
                 580);
         place.setTypes(new ArrayList<>());
-        place.setFavoritePlaces(new ArrayList<>());
         return place;
     }
 
-    public void autoFillingFavoritePlaces(User user, Place place) {
-        FavoritePlace favoritePlace= new FavoritePlace(new ArrayList<>(),new ArrayList<>());
-        favoritePlace.getPlaces().add(place);
-        favoritePlace.getUsers().add(user);
-        place.getFavoritePlaces().add(favoritePlace);
-        user.getFavoritePlacesEntity().add(favoritePlace);
-    }
 
     public List<Comment> autoCreateComments() {
         List<Comment> comments = new ArrayList<>();
@@ -117,7 +108,7 @@ public class AutoFillingService {
 
     public Rating autoCreatRating() {
         Rating rating = new Rating();
-        rating.setRating(Math.random() * 5);
+        rating.setRating(Math.round(Math.random() * (5-1)+1));
         return rating;
     }
 
@@ -155,10 +146,8 @@ public class AutoFillingService {
                     newsList);
             user.setComments(commentsList);
             user.setRatings(ratings);
-            user.setFavoritePlacesEntity(new ArrayList<>());
-            for (Place place : placeList) {
-                autoFillingFavoritePlaces(user, place);
-            }
+            user.setFavoritePlaces(placeList);
+
             userDAO.save(user);
 
         } else {
@@ -174,21 +163,18 @@ public class AutoFillingService {
                     newsList);
             user.setComments(commentsList);
             user.setRatings(ratings);
-            user.setFavoritePlacesEntity(new ArrayList<>());
-            for (Place place : placeList) {
-                autoFillingFavoritePlaces(user, place);
-            }
+            user.setFavoritePlaces(placeList);
             userDAO.save(user);
         }
     }
 
     public List<Type> autoCreateListOfTypes() {
         List<Type> types = new ArrayList<>();
-        Type typeBar = new Type("Bar",new ArrayList<>());
-        Type typePub = new Type("Pub",new ArrayList<>());
-        Type typeRestaurant = new Type("Restaurant",new ArrayList<>());
-        Type typeDisco = new Type("Disco",new ArrayList<>());
-        Type typeCaffe = new Type("Caffe",new ArrayList<>());
+        Type typeBar = new Type("Bar", new ArrayList<>());
+        Type typePub = new Type("Pub", new ArrayList<>());
+        Type typeRestaurant = new Type("Restaurant", new ArrayList<>());
+        Type typeDisco = new Type("Disco", new ArrayList<>());
+        Type typeCaffe = new Type("Caffe", new ArrayList<>());
         typeDAO.save(typeBar);
         typeDAO.save(typePub);
         typeDAO.save(typeRestaurant);

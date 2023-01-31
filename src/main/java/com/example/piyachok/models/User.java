@@ -83,9 +83,6 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "favoritePlace_id")
     )
     @ToString.Exclude
-    private List<FavoritePlace> favoritePlacesEntity;
-
-    @OneToMany
     private List<Place> favoritePlaces;
 
 

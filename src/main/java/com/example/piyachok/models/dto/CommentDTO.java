@@ -12,8 +12,9 @@ import lombok.*;
 public class CommentDTO {
     private int id;
     private String text;
-    private Place place;
-    private User user;
+    private int placeId;
+    private String userLogin;
+    private String placeName;
 
     public CommentDTO(String text) {
         this.text = text;

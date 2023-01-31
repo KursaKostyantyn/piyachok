@@ -1,5 +1,6 @@
 package com.example.piyachok.services;
 
+import com.example.piyachok.customExceptions.UserIsNotActivatedException;
 import com.example.piyachok.dao.UserDAO;
 import com.example.piyachok.customExceptions.RefreshTokenException;
 import com.example.piyachok.models.RefreshToken;
@@ -41,6 +42,9 @@ public class AuthService {
             headers.add("Authorization", "Bearer " + jwtToken);
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getLogin());
             user = userDAO.findUserByLogin(user.getLogin()).orElse(new User());
+            if (!user.isActivated()){
+                throw new UserIsNotActivatedException(user.getLogin(), "user is not activated");
+            }
              return new ResponseEntity<>(new JwtResponseDTO(jwtToken, refreshToken.getToken(), userService.convertUserToUserDTO(user)), headers, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);

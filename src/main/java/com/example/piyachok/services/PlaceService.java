@@ -3,10 +3,7 @@ package com.example.piyachok.services;
 import com.example.piyachok.dao.PlaceDAO;
 import com.example.piyachok.dao.TypeDAO;
 import com.example.piyachok.dao.UserDAO;
-import com.example.piyachok.models.News;
-import com.example.piyachok.models.Place;
-import com.example.piyachok.models.Type;
-import com.example.piyachok.models.User;
+import com.example.piyachok.models.*;
 import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.PlaceDTO;
 import lombok.AllArgsConstructor;
@@ -17,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @AllArgsConstructor
 @Service
@@ -27,36 +26,46 @@ public class PlaceService {
     private TypeDAO typeDAO;
     private ItemListService itemListService;
 
-    public PlaceDTO convertPlaceToPlaceDTO(Place place) {
+    public static PlaceDTO convertPlaceToPlaceDTO(Place place) {
+        PlaceDTO placeDTO = new PlaceDTO();
+        placeDTO.setId(place.getId());
+        placeDTO.setName(place.getName());
+        placeDTO.setPhoto(place.getPhoto());
+        placeDTO.setAddress(place.getAddress());
+        placeDTO.setWorkSchedule(place.getWorkSchedule());
+        placeDTO.setActivated(place.isActivated());
+        placeDTO.setDescription(place.getDescription());
+        placeDTO.setContacts(place.getContacts());
+        placeDTO.setAverageCheck(place.getAverageCheck());
+        placeDTO.setCreationDate(place.getCreationDate());
+        placeDTO.setTypes(place.getTypes());
+        placeDTO.setUserId(place.getUser().getId());
+        placeDTO.setNews(place.getNews());
+        placeDTO.setAverageRating(calculateAverageRating(place.getRatings()));
+        return placeDTO;
+    }
 
-        return new PlaceDTO(
-                place.getId(),
-                place.getName(),
-                place.getPhoto(),
-                place.getAddress(),
-                place.getWorkSchedule(),
-                place.isActivated(),
-                place.getDescription(),
-                place.getContacts(),
-                place.getAverageCheck(),
-                place.getCreationDate(),
-                place.getTypes(),
-                place.getUser().getId(),
-                place.getNews()
-
-        );
+    public static double calculateAverageRating(List<Rating> ratings) {
+        double average = 0;
+        if (ratings.size() != 0) {
+            average = ratings.stream().mapToDouble(Rating::getRating).sum() / ratings.size();
+            average = Math.round(average * 100.00) / 100.00;
+            return average;
+        }
+        return average;
     }
 
     public ResponseEntity<PlaceDTO> savePlace(int userId, Place place) {
+
         User user = userDAO.findById(userId).orElse(new User());
         if (place != null && user.getLogin() != null) {
             place.setUser(user);
             place.setNews(new ArrayList<>());
-            List<Type> types=place.getTypes();
+            List<Type> types = place.getTypes();
             place.setTypes(new ArrayList<>());
-            for(Type type:types){
+            for (Type type : types) {
                 Type typeByName = typeDAO.getTypeByName(type.getName());
-                if (typeByName!=null){
+                if (typeByName != null) {
                     place.getTypes().add(typeByName);
                 }
             }
@@ -70,25 +79,25 @@ public class PlaceService {
         Place place = placeDAO.findById(id).orElse(new Place());
         if (place.getName() != null) {
             List<Type> allByPlace = typeDAO.findAllByPlace(place);
-            for (Type type : allByPlace){
+            for (Type type : allByPlace) {
                 type.getPlace().remove(place);
                 typeDAO.save(type);
             }
             place.setTypes(new ArrayList<>());
             placeDAO.deleteById(id);
-            return new ResponseEntity<>(id,HttpStatus.OK);
+            return new ResponseEntity<>(id, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<ItemListDTO<PlaceDTO>> findAllPlaces(Integer page) {
-        boolean old=false;
+        boolean old = false;
         int itemsOnPage = 10;
         List<PlaceDTO> places = placeDAO.findAll()
                 .stream()
-                .map(this::convertPlaceToPlaceDTO)
+                .map(PlaceService::convertPlaceToPlaceDTO)
                 .collect(Collectors.toList());
-      return itemListService.createResponseEntity(places,itemsOnPage,page,old);
+        return itemListService.createResponseEntity(places, itemsOnPage, page, old);
     }
 
 
@@ -114,8 +123,6 @@ public class PlaceService {
         Place place = placeDAO.findById(placeId).orElse(new Place());
         if (place.getName() != null) {
             place.getNews().add(news);
-            //todo delete?
-//            placeDAO.save(place);
             news.setPlace(place);
             return true;
         }

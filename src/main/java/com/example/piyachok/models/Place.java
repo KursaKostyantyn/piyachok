@@ -91,16 +91,6 @@ public class Place {
     @ToString.Exclude
     private List<Rating> ratings;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "favoritePlaces_places",
-            joinColumns = @JoinColumn(name = "place_id"),
-            inverseJoinColumns = @JoinColumn(name = "favoritePlace_id")
-    )
-
-    @ToString.Exclude
-    private List<FavoritePlace> favoritePlaces;
-
 
     public Place(String name, String photo, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck, List<Type> types, List<News> news) {
         this.name = name;

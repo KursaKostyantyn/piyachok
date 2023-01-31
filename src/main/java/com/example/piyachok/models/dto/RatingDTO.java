@@ -12,6 +12,6 @@ import lombok.*;
 public class RatingDTO {
     private int id;
     private double rating;
-    private Place place;
-    private User user;
+    private int placeId;
+    private String userLogin;
 }

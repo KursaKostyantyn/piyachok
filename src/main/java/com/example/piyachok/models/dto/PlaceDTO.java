@@ -28,6 +28,7 @@ public class PlaceDTO {
     private LocalDate creationDate;
     private List<Type> types;
     private int  userId;
+    private double averageRating;
     private List<News> news;
 
 }

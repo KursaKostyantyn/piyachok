@@ -1,6 +1,8 @@
 package com.example.piyachok.controllers;
 
 import com.example.piyachok.models.User;
+import com.example.piyachok.models.dto.ItemListDTO;
+import com.example.piyachok.models.dto.PlaceDTO;
 import com.example.piyachok.models.dto.UserDTO;
 import com.example.piyachok.services.UserService;
 import lombok.AllArgsConstructor;
@@ -12,10 +14,11 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("")
 public class UserController {
     private UserService userService;
 
-    @PostMapping("/register")
+    @PostMapping("register")
     public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
         return userService.saveUser(userDTO);
     }
@@ -26,7 +29,7 @@ public class UserController {
         return userService.deleteUserById(id);
     }
 
-    @GetMapping("users")
+    @GetMapping("users/")
     public ResponseEntity<List<UserDTO>> findAllUsers() {
         return userService.findAllUsers();
     }
@@ -41,6 +44,29 @@ public class UserController {
         return userService.updateUserById(id, user);
     }
 
+    @GetMapping("users/favoritePlaces")
+    public ResponseEntity<ItemListDTO<PlaceDTO>> getFavoritePlacesByUserLogin(@RequestParam String login, @RequestParam(required = false) Integer page) {
+        return userService.getFavoritePlacesByUserLogin(login, page);
+    }
 
+    @PutMapping("users/favoritePlaces/add")
+    public ResponseEntity<UserDTO> addPlaceToFavoriteByPlaceIdAndUserLogin(@RequestParam int placeId, @RequestParam String login) {
+        return userService.addPlaceToFavoriteByPlaceIdAndUserLogin(placeId, login);
+    }
+
+    @GetMapping("users/favoritePlaces/check")
+    public ResponseEntity<Boolean> checkPlaceIsFavoriteByPlaceIdAndUserLogin(@RequestParam int placeId, @RequestParam String login) {
+        return userService.checkPlaceIsFavoriteByPlaceIdAndUserLogin(placeId, login);
+    }
+
+    @DeleteMapping("users/favoritePlaces/delete")
+    public ResponseEntity<UserDTO> deletePlaceFromFavoriteByPlaceIdUserLogin(@RequestParam int placeId,@RequestParam String login){
+        return userService.deletePlaceFromFavoriteByPlaceIdUserLogin(placeId,login);
+    }
+
+    @GetMapping("activate")
+    public ResponseEntity<UserDTO> activateUserById (@RequestParam int userId){
+        return userService.activateUserById(userId);
+    }
 
 }
