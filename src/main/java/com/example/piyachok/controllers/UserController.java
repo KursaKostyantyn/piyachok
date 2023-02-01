@@ -69,4 +69,14 @@ public class UserController {
         return userService.activateUserById(userId);
     }
 
+    @GetMapping("users/sendResetPasswordToken")
+    public ResponseEntity<HttpStatus> sendResetPasswordToken(@RequestParam String userLogin){
+        return userService.sendResetPasswordToken(userLogin);
+    }
+
+    @GetMapping("users/resetPassword")
+    public ResponseEntity<UserDTO> resetPasswordAndSetNew(@RequestParam String userLogin,@RequestParam String password,@RequestParam String resetPasswordToken){
+        return userService.resetPasswordAndSetNew(userLogin, password, resetPasswordToken);
+    }
+
 }

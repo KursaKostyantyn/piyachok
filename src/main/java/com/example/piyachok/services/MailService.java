@@ -20,13 +20,26 @@ public class MailService {
         try {
             helper.setFrom("forjava2022@gmail.com");
             helper.setTo(user.getEmail());
-            helper.setText("to activate account visit <a href='http://localhost:3000/activate?userId="+user.getId()+"'>this</a> link", true);
+            helper.setText("to activate account visit <a href='http://localhost:3000/activate?userId=" + user.getId() + "'>this</a> link", true);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
 
         javaMailSender.send(mimeMessage);
 
+    }
+
+    public void sendResetPasswordTokenMail(User user) {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+        try {
+            helper.setFrom("forjava2022@gmail.com");
+            helper.setTo(user.getEmail());
+            helper.setText("for reset your password visit <a href='http://localhost:3000/resetPassword?userLogin=" + user.getLogin() + "&resetPasswordToken=" + user.getResetPasswordToken() + "'>this</a> link", true);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        javaMailSender.send(mimeMessage);
     }
 
 }

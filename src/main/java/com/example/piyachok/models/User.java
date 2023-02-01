@@ -31,6 +31,8 @@ public class User {
     private boolean isActivated;
     private boolean isBlocked;
     private LocalDate creationDate =LocalDate.now();
+    private String resetPasswordToken;
+    private long resetPasswordTokenExpiryDate;
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JsonManagedReference

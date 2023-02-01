@@ -82,7 +82,7 @@ public class AutoFillingService {
                 "09:00", "18:00",
                 "09:00", "18:00",
                 "09:00", "18:00");
-        Contact contact = new Contact("1234567890", "test@test.com");
+        Contact contact = new Contact("1234567890", "forjava2022@gmail.com");
 
         Place place = new Place("This is Pivbar" + number,
                 "photo.png",
@@ -139,7 +139,7 @@ public class AutoFillingService {
                     "Melnik",
                     passwordEncoder.encode("admin"),
                     LocalDate.of(1987, 12, 12),
-                    "admin@test.com",
+                    "forjava2022@gmail.com",
                     Role.ROLE_SUPERADMIN,
                     true, false,
                     placeList,
@@ -156,7 +156,7 @@ public class AutoFillingService {
                     "Melnik",
                     passwordEncoder.encode("admin"),
                     LocalDate.of(1987, 12, 12),
-                    "admin@test.com",
+                    "forjava2022@gmail.com",
                     Role.ROLE_ADMIN,
                     true, false,
                     placeList,

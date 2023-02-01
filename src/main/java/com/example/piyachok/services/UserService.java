@@ -9,14 +9,12 @@ import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.PlaceDTO;
 import com.example.piyachok.models.dto.UserDTO;
 import lombok.AllArgsConstructor;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Collections;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -185,7 +183,7 @@ public class UserService {
     }
 
     public ResponseEntity<UserDTO> activateUserById(int userId) {
-        System.out.println("userId"+userId);
+        System.out.println("userId" + userId);
         User user = userDAO.findById(userId).orElse(new User());
         if (user.getLogin() != null) {
             user.setActivated(true);
@@ -193,6 +191,43 @@ public class UserService {
             return new ResponseEntity<>(convertUserToUserDTO(user), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<HttpStatus> sendResetPasswordToken(String userLogin) {
+        User user = userDAO.findUserByLogin(userLogin).orElse(new User());
+        if (user.getLogin() != null) {
+            user.setResetPasswordToken(generateRandomPassword(10));
+            user.setResetPasswordTokenExpiryDate(System.currentTimeMillis() + 1800000);
+            userDAO.save(user);
+            mailService.sendResetPasswordTokenMail(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<UserDTO> resetPasswordAndSetNew(String userLogin, String password, String resetPasswordToken) {
+        User user = userDAO.findUserByLogin(userLogin).orElse(new User());
+        if (user.getLogin() != null
+                && resetPasswordToken.equals(user.getResetPasswordToken())
+                && user.getResetPasswordTokenExpiryDate() > System.currentTimeMillis()) {
+            user.setPassword(passwordEncoder.encode(password));
+            user.setResetPasswordToken(null);
+            user.setResetPasswordTokenExpiryDate(0);
+            userDAO.save(user);
+            return new ResponseEntity<>(convertUserToUserDTO(user),HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    private String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder stringBuilder = new StringBuilder();
+        SecureRandom random = new SecureRandom();
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(chars.length());
+            stringBuilder.append(chars.charAt(randomIndex));
+        }
+        return stringBuilder.toString();
     }
 
 
