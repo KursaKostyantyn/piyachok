@@ -39,4 +39,10 @@ public class RatingController {
         return ratingService.updateRating(ratingDTO);
     }
 
+    @GetMapping("ratings/{myRatingsId}")
+    public ResponseEntity<RatingDTO> findRatingById(@PathVariable int myRatingsId){
+        return ratingService.findRatingById(myRatingsId);
+    }
+
+
 }

@@ -13,5 +13,6 @@ public class RatingDTO {
     private int id;
     private double rating;
     private int placeId;
+    private String placeName;
     private String userLogin;
 }

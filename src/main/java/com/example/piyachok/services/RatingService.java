@@ -28,6 +28,7 @@ public class RatingService {
         ratingDTO.setRating(rating.getRating());
         ratingDTO.setUserLogin(rating.getUser().getLogin());
         ratingDTO.setPlaceId(rating.getPlace().getId());
+        ratingDTO.setPlaceName(rating.getPlace().getName());
         return ratingDTO;
     }
 
@@ -64,9 +65,9 @@ public class RatingService {
         if (rating.getPlace() == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (checkIsExistRating(ratingDTO).getPlace()==null){
+        if (checkIsExistRating(ratingDTO).getPlace() == null) {
             ratingDAO.save(rating);
-            return new ResponseEntity<>(convertRatingToRatingDTO(rating),HttpStatus.OK);
+            return new ResponseEntity<>(convertRatingToRatingDTO(rating), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
@@ -101,23 +102,31 @@ public class RatingService {
     }
 
 
-
-    public ResponseEntity<RatingDTO> findRatingByPLaceIdAndUserLogin(int placeId, String userLogin){
+    public ResponseEntity<RatingDTO> findRatingByPLaceIdAndUserLogin(int placeId, String userLogin) {
         Rating rating = ratingDAO.findRatingByPlaceIdAndUserLogin(placeId, userLogin).orElse(new Rating());
-        if (rating.getPlace()!=null){
-            return new ResponseEntity<>(convertRatingToRatingDTO(rating),HttpStatus.OK);
+        if (rating.getPlace() != null) {
+            return new ResponseEntity<>(convertRatingToRatingDTO(rating), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<RatingDTO> updateRating(RatingDTO ratingDTO){
+    public ResponseEntity<RatingDTO> updateRating(RatingDTO ratingDTO) {
         Rating rating = ratingDAO.findRatingByPlaceIdAndUserLogin(ratingDTO.getPlaceId(), ratingDTO.getUserLogin()).orElse(new Rating());
-        if (rating.getPlace()!=null){
+        if (rating.getPlace() != null) {
             rating.setRating(ratingDTO.getRating());
             ratingDAO.save(rating);
-            return new ResponseEntity<>(convertRatingToRatingDTO(rating),HttpStatus.OK);
+            return new ResponseEntity<>(convertRatingToRatingDTO(rating), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<RatingDTO> findRatingById(int myRatingsId) {
+        Rating rating = ratingDAO.findById(myRatingsId).orElse(new Rating());
+        if (rating.getId() != 0) {
+            return new ResponseEntity<>(convertRatingToRatingDTO(rating),HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
