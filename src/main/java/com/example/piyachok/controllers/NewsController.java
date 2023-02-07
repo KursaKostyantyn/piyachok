@@ -1,6 +1,5 @@
 package com.example.piyachok.controllers;
 
-import com.example.piyachok.models.News;
 import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.NewsDTO;
 import com.example.piyachok.services.NewsService;
@@ -9,11 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @AllArgsConstructor
-@RequestMapping("/main/news")
+@RequestMapping("news")
 public class NewsController {
     private NewsService newsService;
 
@@ -28,7 +25,7 @@ public class NewsController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<NewsDTO> findNewsByID(@PathVariable int id){
-        return newsService.findNewsByID(id);
+        return newsService.findNewsById(id);
     }
 
     @GetMapping("/mainNews")

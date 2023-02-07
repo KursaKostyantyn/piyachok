@@ -14,7 +14,7 @@ import java.util.LinkedList;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/main/places")
+@RequestMapping("/places")
 public class PlaceController {
 
     private PlaceService placeService;
@@ -44,5 +44,11 @@ public class PlaceController {
     public ResponseEntity<PlaceDTO> updatePlaceById(@PathVariable int id, @RequestBody Place place) {
         return placeService.updatePlaceById(id, place);
     }
+
+    @GetMapping("myPlaces")
+    public ResponseEntity<ItemListDTO<PlaceDTO>> findPlacesByUserLogin(@RequestParam(required = false) Integer page,@RequestParam String userLogin){
+        return placeService.findPlacesByUserLogin(page,userLogin);
+    }
+
 
 }

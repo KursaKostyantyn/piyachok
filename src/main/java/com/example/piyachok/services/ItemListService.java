@@ -13,14 +13,13 @@ import java.util.List;
 public class ItemListService {
 
     public <T> ResponseEntity<ItemListDTO<T>> createResponseEntity(List<T> itemList, Integer itemsOnPage, Integer page, Boolean old) {
-        page =checkValueOfPage(page);
+        page = checkValueOfPage(page);
         old = checkValueOfOld(old);
         if (itemList.size() == 0) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         ItemListDTO<T> itemListDTO = createItemList(itemList, itemsOnPage, page, old);
         if (itemListDTO.getItems() != null) {
-            System.out.println("itemListDTO"+ itemListDTO);
             return new ResponseEntity<>(itemListDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -56,7 +55,6 @@ public class ItemListService {
         }
 
         itemListDTO.setItems(itemList.subList(startIndex, endIndex));
-
 
         itemListDTO.setAmountOfPages(amountOfPages);
         itemListDTO.setAmountOfItems(itemList.size());

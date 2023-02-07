@@ -130,4 +130,20 @@ public class PlaceService {
         return false;
     }
 
+    public ResponseEntity<ItemListDTO<PlaceDTO>> findPlacesByUserLogin(Integer page,String userLogin){
+        boolean old = false;
+        int itemsOnPage = 10;
+        List<Place> places=placeDAO.findAllByUser_Login(userLogin).orElse(new ArrayList<>());
+        if (places.size()!=0){
+            List<PlaceDTO> placeDTOS=places
+                    .stream()
+                    .map(PlaceService::convertPlaceToPlaceDTO)
+                    .collect(Collectors.toList());
+            return itemListService.createResponseEntity(placeDTOS,itemsOnPage,page,old);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+
+    }
+
 }

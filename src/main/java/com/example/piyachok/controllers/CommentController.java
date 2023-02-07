@@ -18,13 +18,13 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("myCabinet/myComments")
-    public ResponseEntity<List<CommentDTO>> findCommentsByUserLogin (@RequestParam String login){
-        return commentService.findCommentsByUserLogin(login);
+    public ResponseEntity<ItemListDTO<CommentDTO>> findCommentsByUserLogin (@RequestParam String login, @RequestParam(required = false) Integer page, @RequestParam(required = false) Boolean old){
+        return commentService.findCommentsByUserLogin(login,page,old);
     }
 
-    @GetMapping("myCabinet/myComments/{id}")
-    public ResponseEntity<CommentDTO> findCommentById(@PathVariable int id){
-        return commentService.findCommentById(id);
+    @GetMapping("comments/{commentId}")
+    public ResponseEntity<CommentDTO> findCommentById(@PathVariable int commentId){
+        return commentService.findCommentById(commentId);
     }
 
     @GetMapping("comments/placeComments")
@@ -41,6 +41,11 @@ public class CommentController {
     @PutMapping("comments")
     public ResponseEntity<CommentDTO> updateComment(@RequestBody CommentDTO commentDTO){
         return commentService.updateComment(commentDTO);
+    }
+
+    @GetMapping("comments")
+    public ResponseEntity<ItemListDTO<CommentDTO>> findAllComments(@RequestParam(required = false) Integer page, @RequestParam(required = false) Boolean old){
+        return commentService.findAllComments(page, old);
     }
 
 

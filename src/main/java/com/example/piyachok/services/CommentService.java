@@ -1,5 +1,6 @@
 package com.example.piyachok.services;
 
+import com.example.piyachok.constants.Role;
 import com.example.piyachok.dao.CommentDAO;
 import com.example.piyachok.dao.PlaceDAO;
 import com.example.piyachok.dao.UserDAO;
@@ -11,9 +12,13 @@ import com.example.piyachok.models.dto.ItemListDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -47,22 +52,32 @@ public class CommentService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<List<CommentDTO>> findCommentsByUserLogin(String login) {
+    public ResponseEntity<ItemListDTO<CommentDTO>> findCommentsByUserLogin(String login, Integer page, Boolean old) {
+        int itemsOnPage=10;
         User user = userDAO.findUserByLogin(login).orElse(new User());
         if (user.getLogin() != null) {
             List<CommentDTO> usersComments = commentDAO.findAllByUser(user)
                     .stream()
                     .map(CommentService::convertCommentToCommentDTO)
                     .collect(Collectors.toList());
-            return new ResponseEntity<>(usersComments, HttpStatus.OK);
+            return itemListService.createResponseEntity(usersComments,itemsOnPage,page,old);
 
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<CommentDTO> findCommentById(int id) {
-        Comment comment = commentDAO.findById(id).orElse(new Comment());
-        if (comment.getId() != 0) {
+    public ResponseEntity<CommentDTO> findCommentById(int commentId) {
+
+        Comment comment = commentDAO.findById(commentId).orElse(new Comment());
+
+        if (comment.getId() == 0) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole())) {
+            return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
+        }
+
+        if (SecurityService.getLoginAuthorizedUser().equals(comment.getUser().getLogin())) {
             return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -102,9 +117,9 @@ public class CommentService {
 
     public ResponseEntity<CommentDTO> updateComment(CommentDTO commentDTO) {
         if (commentDTO != null) {
-            Comment comment=commentDAO.findById(commentDTO.getId()).orElse(new Comment());
+            Comment comment = commentDAO.findById(commentDTO.getId()).orElse(new Comment());
 
-            if (comment.getId()!=0){
+            if (comment.getId() != 0) {
                 comment.setText(commentDTO.getText());
                 commentDAO.save(comment);
                 return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
@@ -114,7 +129,18 @@ public class CommentService {
 
     }
 
+    public ResponseEntity<ItemListDTO<CommentDTO>> findAllComments(Integer page, Boolean old) {
+        int itemsOnPage = 10;
+        List<CommentDTO> comments = commentDAO.findAll()
+                .stream()
+                .map(CommentService::convertCommentToCommentDTO)
+                .collect(Collectors.toList());
+        if (comments.size() != 0) {
+            return itemListService.createResponseEntity(comments, itemsOnPage, page, old);
+        }
 
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
 
 }

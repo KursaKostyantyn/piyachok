@@ -8,6 +8,7 @@ import com.example.piyachok.models.User;
 import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.PlaceDTO;
 import com.example.piyachok.models.dto.UserDTO;
+import com.example.piyachok.security.JwtUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,7 @@ public class UserService {
     private ItemListService itemListService;
     private PasswordEncoder passwordEncoder;
     private MailService mailService;
+    private JwtUtils jwtUtils;
 
 
     public static UserDTO convertUserToUserDTO(User user) {
@@ -73,15 +75,22 @@ public class UserService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<List<UserDTO>> findAllUsers() {
-        return new ResponseEntity<>(userDAO.findAll()
+    public ResponseEntity<ItemListDTO<UserDTO>> findAllUsers(Integer page) {
+        boolean old = false;
+        int itemsOnPage = 2;
+        List<UserDTO> users=userDAO.findAll()
                 .stream()
                 .map(UserService::convertUserToUserDTO)
-                .collect(Collectors.toList()), HttpStatus.OK);
+                .collect(Collectors.toList());
+        if (users.size()!=0){
+            return itemListService.createResponseEntity(users,itemsOnPage, page,old);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<UserDTO> findUserByID(int id) {
-        User user = userDAO.findById(id).orElse(new User());
+    public ResponseEntity<UserDTO> findUserByID(int userId) {
+        User user = userDAO.findById(userId).orElse(new User());
         if (user.getLogin() != null) {
             return new ResponseEntity<>(convertUserToUserDTO(user), HttpStatus.OK);
         }
@@ -182,9 +191,9 @@ public class UserService {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<UserDTO> activateUserById(int userId) {
-        System.out.println("userId" + userId);
-        User user = userDAO.findById(userId).orElse(new User());
+    public ResponseEntity<UserDTO> activateUser(String activateToken) {
+        String login = jwtUtils.getUserLoginFromJwtToken(activateToken);
+        User user = userDAO.findUserByLogin(login).orElse(new User());
         if (user.getLogin() != null) {
             user.setActivated(true);
             userDAO.save(user);
@@ -214,7 +223,7 @@ public class UserService {
             user.setResetPasswordToken(null);
             user.setResetPasswordTokenExpiryDate(0);
             userDAO.save(user);
-            return new ResponseEntity<>(convertUserToUserDTO(user),HttpStatus.OK);
+            return new ResponseEntity<>(convertUserToUserDTO(user), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }

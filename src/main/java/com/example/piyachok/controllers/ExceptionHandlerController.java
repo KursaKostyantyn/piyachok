@@ -1,5 +1,6 @@
 package com.example.piyachok.controllers;
 
+import com.example.piyachok.customExceptions.JwtTokenException;
 import com.example.piyachok.customExceptions.RefreshTokenException;
 import com.example.piyachok.customExceptions.UserIsNotActivatedException;
 import com.example.piyachok.models.dto.CustomErrorDTO;
@@ -26,6 +27,11 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(value = UserIsNotActivatedException.class)
     public ResponseEntity<CustomErrorDTO> userIsNotActivatedException(UserIsNotActivatedException e){
+        return new ResponseEntity<>(new CustomErrorDTO(e.getMessage()),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = JwtTokenException.class)
+    public ResponseEntity<CustomErrorDTO> jwtTokenException(JwtTokenException e){
         return new ResponseEntity<>(new CustomErrorDTO(e.getMessage()),HttpStatus.BAD_REQUEST);
     }
 

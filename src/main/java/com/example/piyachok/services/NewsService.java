@@ -1,6 +1,7 @@
 package com.example.piyachok.services;
 
 import com.example.piyachok.constants.Category;
+import com.example.piyachok.constants.Role;
 import com.example.piyachok.dao.NewsDAO;
 import com.example.piyachok.models.News;
 import com.example.piyachok.models.dto.ItemListDTO;
@@ -65,9 +66,17 @@ public class NewsService {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<NewsDTO> findNewsByID(int id) {
+    public ResponseEntity<NewsDTO> findNewsById(int id) {
         News news = newsDAO.findById(id).orElse(new News());
-        if (news.getText() != null) {
+        if (news.getText() == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole())) {
+            return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
+        }
+
+        if (SecurityService.getLoginAuthorizedUser().equals(news.getUser().getLogin())) {
             return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

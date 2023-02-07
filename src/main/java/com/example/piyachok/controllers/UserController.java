@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @AllArgsConstructor
 @RequestMapping("")
@@ -29,14 +27,14 @@ public class UserController {
         return userService.deleteUserById(id);
     }
 
-    @GetMapping("users/")
-    public ResponseEntity<List<UserDTO>> findAllUsers() {
-        return userService.findAllUsers();
+    @GetMapping("users")
+    public ResponseEntity<ItemListDTO<UserDTO>> findAllUsers(@RequestParam(required = false) Integer page) {
+        return userService.findAllUsers(page);
     }
 
-    @GetMapping("users/{id}")
-    public ResponseEntity<UserDTO> findUserById(@PathVariable int id) {
-        return userService.findUserByID(id);
+    @GetMapping("users/{userId}")
+    public ResponseEntity<UserDTO> findUserById(@PathVariable int userId) {
+        return userService.findUserByID(userId);
     }
 
     @PutMapping("users/update")
@@ -65,8 +63,8 @@ public class UserController {
     }
 
     @GetMapping("activate")
-    public ResponseEntity<UserDTO> activateUserById (@RequestParam int userId){
-        return userService.activateUserById(userId);
+    public ResponseEntity<UserDTO> activateUser (@RequestParam String activateToken){
+        return userService.activateUser(activateToken);
     }
 
     @GetMapping("users/sendResetPasswordToken")
