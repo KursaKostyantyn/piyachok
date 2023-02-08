@@ -83,6 +83,13 @@ public class PlaceService {
                 type.getPlace().remove(place);
                 typeDAO.save(type);
             }
+            List<User> users=userDAO.findAllByFavoritePlaces(place).orElse(new ArrayList<>());
+            if (users.size()!=0){
+              for (User user:users){
+                  user.getFavoritePlaces().remove(place);
+                  userDAO.save(user);
+              }
+            }
             place.setTypes(new ArrayList<>());
             placeDAO.deleteById(id);
             return new ResponseEntity<>(id, HttpStatus.OK);

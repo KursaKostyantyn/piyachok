@@ -34,8 +34,8 @@ public class User {
     private String resetPasswordToken;
     private long resetPasswordTokenExpiryDate;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "user-place")
     @JoinTable(
             name = "users_places",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -44,7 +44,7 @@ public class User {
     @ToString.Exclude
     private List<Place> places;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "user-news")
     @JoinTable(
             name = "users_news",
@@ -54,7 +54,7 @@ public class User {
     @ToString.Exclude
     private List<News> news;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_comments",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -64,7 +64,7 @@ public class User {
     @ToString.Exclude
     private List<Comment> comments;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @OneToMany(cascade =CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_rating",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -76,9 +76,10 @@ public class User {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "refreshToken_id", referencedColumnName = "id")
+    @JsonManagedReference(value = "user-refreshToken")
     private RefreshToken refreshToken;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "favoritePlaces_users",
             joinColumns = @JoinColumn(name = "user_id"),

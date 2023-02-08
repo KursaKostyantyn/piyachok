@@ -57,7 +57,7 @@ public class Place {
             joinColumns = @JoinColumn(name = "place_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    @JsonBackReference
+    @JsonBackReference (value = "user-place")
     @ToString.Exclude
     private User user;
 
@@ -71,7 +71,7 @@ public class Place {
     @ToString.Exclude
     private List<News> news;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "places_comments",
             joinColumns = @JoinColumn(name = "place_id"),
@@ -81,7 +81,7 @@ public class Place {
     @ToString.Exclude
     private List<Comment> comments;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "places_rating",
             joinColumns = @JoinColumn(name = "place_id"),

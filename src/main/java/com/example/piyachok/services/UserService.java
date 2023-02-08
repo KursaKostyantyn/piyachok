@@ -1,9 +1,11 @@
 package com.example.piyachok.services;
 
 import com.example.piyachok.dao.PlaceDAO;
+import com.example.piyachok.dao.TypeDAO;
 import com.example.piyachok.dao.UserDAO;
 import com.example.piyachok.models.News;
 import com.example.piyachok.models.Place;
+import com.example.piyachok.models.Type;
 import com.example.piyachok.models.User;
 import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.PlaceDTO;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,8 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
     private MailService mailService;
     private JwtUtils jwtUtils;
+
+    private TypeDAO typeDAO;
 
 
     public static UserDTO convertUserToUserDTO(User user) {
@@ -68,8 +73,18 @@ public class UserService {
 
     public ResponseEntity<HttpStatus> deleteUserById(int id) {
         User user = userDAO.findById(id).orElse(new User());
+
         if (user.getLogin() != null) {
+            for(Place place:user.getPlaces()){
+                List<Type> allByPlace = typeDAO.findAllByPlace(place);
+                for (Type type : allByPlace) {
+                    type.getPlace().remove(place);
+                    typeDAO.save(type);
+                }
+            }
+            user.setFavoritePlaces(new ArrayList<>());
             userDAO.deleteById(id);
+
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -101,7 +116,6 @@ public class UserService {
         User oldUser = userDAO.findById(id).orElse(new User());
         if (oldUser.getLogin() != null) {
             if (!user.getPassword().equals("")) {
-                System.out.println("user.getPassword() = " + user.getPassword());
                 oldUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }
             oldUser.setFirstName(user.getFirstName());

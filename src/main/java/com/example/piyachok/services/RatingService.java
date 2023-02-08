@@ -46,10 +46,6 @@ public class RatingService {
     public ResponseEntity<List<RatingDTO>> findRatingsByUserLogin(String login) {
         List<Rating> userRatings = ratingDAO.findAllByUser_Login(login);
 
-        for (Rating rating : userRatings) {
-            System.out.println(rating);
-        }
-
         if (userRatings.size() != 0) {
             return new ResponseEntity<>(userRatings
                     .stream()

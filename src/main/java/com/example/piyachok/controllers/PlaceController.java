@@ -31,7 +31,6 @@ public class PlaceController {
 
     @GetMapping("")
     public ResponseEntity<ItemListDTO<PlaceDTO>> findAllPlaces(@RequestParam(required = false) int page) {
-        System.out.println(page);
         return placeService.findAllPlaces(page);
     }
 

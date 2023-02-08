@@ -113,7 +113,6 @@ public class NewsService {
             newsById.setCategory(news.getCategory());
             newsById.setText(news.getText());
             newsById.setPaid(news.isPaid());
-            System.out.println(newsById.getPlace());
             newsDAO.save(newsById);
             return new ResponseEntity<>(convertNewsToNewsDTO(newsById), HttpStatus.OK);
         }
