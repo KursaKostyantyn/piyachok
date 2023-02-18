@@ -28,6 +28,7 @@ public class UserDTO {
     private LocalDate creationDate;
     private List<Place> places;
     private List<News> news;
+    private String photo;
 
     public UserDTO(int id, String login, String firstName, String lastName, LocalDate birthDate, String email, Role role, boolean isActivated, boolean isBlocked, LocalDate creationDate, List<Place> places, List<News> news) {
         this.id = id;

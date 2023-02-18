@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @AllArgsConstructor
@@ -76,5 +77,11 @@ public class UserController {
     public ResponseEntity<UserDTO> resetPasswordAndSetNew(@RequestParam String userLogin,@RequestParam String password,@RequestParam String resetPasswordToken){
         return userService.resetPasswordAndSetNew(userLogin, password, resetPasswordToken);
     }
+
+    @PutMapping("users/addPhoto")
+    public ResponseEntity<UserDTO> addPhotoToUserByLogin(@RequestParam String login, @RequestParam MultipartFile photo){
+return userService.addPhotoToUserByLogin(login, photo);
+    }
+
 
 }

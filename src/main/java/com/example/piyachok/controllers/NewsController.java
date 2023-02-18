@@ -23,9 +23,9 @@ public class NewsController {
     public ResponseEntity<NewsDTO> saveNews (@RequestParam int placeId, @RequestParam String login, @RequestBody NewsDTO newsDTO){
         return newsService.saveNews(placeId,login, newsDTO);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<NewsDTO> findNewsByID(@PathVariable int id){
-        return newsService.findNewsById(id);
+    @GetMapping("/{newsId}")
+    public ResponseEntity<NewsDTO> findNewsByID(@PathVariable int newsId){
+        return newsService.findNewsById(newsId);
     }
 
     @GetMapping("/mainNews")

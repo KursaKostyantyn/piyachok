@@ -21,20 +21,21 @@ public class ExceptionHandlerController {
     }
 
     @ExceptionHandler(value = SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<CustomErrorDTO> loginExistError(SQLIntegrityConstraintViolationException ex) {
-        return new ResponseEntity<>(new CustomErrorDTO("Login already exists"), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<CustomErrorDTO> sqlExistError(SQLIntegrityConstraintViolationException ex) {
+        return new ResponseEntity<>(new CustomErrorDTO(ex.getMessage().split(" ")[5].substring(1, 6) + " " +
+                ex.getMessage().split(" ")[2] + " " +
+                "already exist"), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = UserIsNotActivatedException.class)
-    public ResponseEntity<CustomErrorDTO> userIsNotActivatedException(UserIsNotActivatedException e){
-        return new ResponseEntity<>(new CustomErrorDTO(e.getMessage()),HttpStatus.BAD_REQUEST);
+    public ResponseEntity<CustomErrorDTO> userIsNotActivatedException(UserIsNotActivatedException e) {
+        return new ResponseEntity<>(new CustomErrorDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = JwtTokenException.class)
-    public ResponseEntity<CustomErrorDTO> jwtTokenException(JwtTokenException e){
-        return new ResponseEntity<>(new CustomErrorDTO(e.getMessage()),HttpStatus.BAD_REQUEST);
+    public ResponseEntity<CustomErrorDTO> jwtTokenException(JwtTokenException e) {
+        return new ResponseEntity<>(new CustomErrorDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
-
 
 
 }

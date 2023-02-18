@@ -71,15 +71,17 @@ public class CommentService {
         Comment comment = commentDAO.findById(commentId).orElse(new Comment());
 
         if (comment.getId() == 0) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        if (SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole())) {
             return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
         }
 
-        if (SecurityService.getLoginAuthorizedUser().equals(comment.getUser().getLogin())) {
-            return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
-        }
+//        todo delete?
+//        if (SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole())) {
+//            return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
+//        }
+//
+//        if (SecurityService.getLoginAuthorizedUser().equals(comment.getUser().getLogin())) {
+//            return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
+//        }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 

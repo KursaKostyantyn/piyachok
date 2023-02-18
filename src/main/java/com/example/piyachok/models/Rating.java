@@ -11,6 +11,7 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Entity(name = "ratings")
+
 public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +20,7 @@ public class Rating {
 
     private double rating;
 
-    @ManyToOne (cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "places_rating",
             joinColumns = @JoinColumn(name = "rating_id"),
@@ -29,7 +30,7 @@ public class Rating {
     @ToString.Exclude
     private Place place;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE},fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_rating",
             joinColumns = @JoinColumn(name = "rating_id"),

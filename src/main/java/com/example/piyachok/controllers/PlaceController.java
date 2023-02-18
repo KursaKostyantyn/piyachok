@@ -49,5 +49,14 @@ public class PlaceController {
         return placeService.findPlacesByUserLogin(page,userLogin);
     }
 
+    @GetMapping("/activated")
+    public ResponseEntity<ItemListDTO<PlaceDTO>> findAllActivatedPlaces(@RequestParam(required = false) Integer page){
+        return placeService.findAllActivatedPlaces(page);
+    }
+
+    @GetMapping("/notActivated")
+    public ResponseEntity<ItemListDTO<PlaceDTO>> findAllNotActivatedPlaces(@RequestParam(required = false) Integer page){
+        return placeService.findAllNotActivatedPlaces(page);
+    }
 
 }

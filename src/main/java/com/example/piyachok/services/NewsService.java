@@ -66,19 +66,20 @@ public class NewsService {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<NewsDTO> findNewsById(int id) {
-        News news = newsDAO.findById(id).orElse(new News());
-        if (news.getText() == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        if (SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole())) {
+    public ResponseEntity<NewsDTO> findNewsById(int newsId) {
+        News news = newsDAO.findById(newsId).orElse(new News());
+        if (news.getText() != null) {
             return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
         }
+//todo delete?
+//        if (SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole())) {
+//            return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
+//        }
+//
+//        if (SecurityService.getLoginAuthorizedUser().equals(news.getUser().getLogin())) {
+//            return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
+//        }
 
-        if (SecurityService.getLoginAuthorizedUser().equals(news.getUser().getLogin())) {
-            return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
-        }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 

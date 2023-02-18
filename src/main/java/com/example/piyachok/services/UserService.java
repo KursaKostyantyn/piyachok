@@ -12,11 +12,18 @@ import com.example.piyachok.models.dto.PlaceDTO;
 import com.example.piyachok.models.dto.UserDTO;
 import com.example.piyachok.security.JwtUtils;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,20 +46,22 @@ public class UserService {
 
 
     public static UserDTO convertUserToUserDTO(User user) {
-        return new UserDTO(
-                user.getId(),
-                user.getLogin(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getBirthDate(),
-                user.getEmail(),
-                user.getRole(),
-                user.isActivated(),
-                user.isBlocked(),
-                user.getCreationDate(),
-                user.getPlaces(),
-                user.getNews()
-        );
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setLogin(user.getLogin());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setCreationDate(user.getCreationDate());
+        userDTO.setBirthDate(user.getBirthDate());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setRole(user.getRole());
+        userDTO.setActivated(user.isActivated());
+        userDTO.setBlocked(user.isBlocked());
+        userDTO.setPlaces(user.getPlaces());
+        userDTO.setNews(user.getNews());
+        userDTO.setPhoto(user.getPhoto());
+
+        return userDTO;
     }
 
     public ResponseEntity<UserDTO> saveUser(UserDTO userDTO) {
@@ -75,7 +84,7 @@ public class UserService {
         User user = userDAO.findById(id).orElse(new User());
 
         if (user.getLogin() != null) {
-            for(Place place:user.getPlaces()){
+            for (Place place : user.getPlaces()) {
                 List<Type> allByPlace = typeDAO.findAllByPlace(place);
                 for (Type type : allByPlace) {
                     type.getPlace().remove(place);
@@ -92,13 +101,13 @@ public class UserService {
 
     public ResponseEntity<ItemListDTO<UserDTO>> findAllUsers(Integer page) {
         boolean old = false;
-        int itemsOnPage = 2;
-        List<UserDTO> users=userDAO.findAll()
+        int itemsOnPage = 10;
+        List<UserDTO> users = userDAO.findAll()
                 .stream()
                 .map(UserService::convertUserToUserDTO)
                 .collect(Collectors.toList());
-        if (users.size()!=0){
-            return itemListService.createResponseEntity(users,itemsOnPage, page,old);
+        if (users.size() != 0) {
+            return itemListService.createResponseEntity(users, itemsOnPage, page, old);
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -251,6 +260,29 @@ public class UserService {
             stringBuilder.append(chars.charAt(randomIndex));
         }
         return stringBuilder.toString();
+    }
+
+    public ResponseEntity<UserDTO> addPhotoToUserByLogin(@NonNull String login,@NonNull MultipartFile photo) {
+
+        User user=userDAO.findUserByLogin(login).orElse(new User());
+        if (user.getLogin()!=null){
+            String originalFilename = photo.getOriginalFilename();
+            user.setPhoto(originalFilename);
+            userDAO.save(user);
+            File usersPhoto = new File("src"+ File.separator+"main"+ File.separator+"resources"+File.separator+"usersPhoto");
+            if (!usersPhoto.exists()){
+                usersPhoto.mkdir();
+            }
+            String pathToSaveFile=usersPhoto.getAbsolutePath()+File.separator+originalFilename;
+            try {
+                photo.transferTo(new File(pathToSaveFile));
+            } catch (IOException e) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(convertUserToUserDTO(user),HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 

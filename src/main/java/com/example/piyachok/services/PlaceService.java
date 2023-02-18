@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @AllArgsConstructor
 @Service
@@ -75,6 +73,14 @@ public class PlaceService {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    public ResponseEntity<PlaceDTO> savePlaceWithPhoto(int userId,Place place){
+
+
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+
     public ResponseEntity<Integer> deletePlaceById(int id) {
         Place place = placeDAO.findById(id).orElse(new Place());
         if (place.getName() != null) {
@@ -83,12 +89,12 @@ public class PlaceService {
                 type.getPlace().remove(place);
                 typeDAO.save(type);
             }
-            List<User> users=userDAO.findAllByFavoritePlaces(place).orElse(new ArrayList<>());
-            if (users.size()!=0){
-              for (User user:users){
-                  user.getFavoritePlaces().remove(place);
-                  userDAO.save(user);
-              }
+            List<User> users = userDAO.findAllByFavoritePlaces(place).orElse(new ArrayList<>());
+            if (users.size() != 0) {
+                for (User user : users) {
+                    user.getFavoritePlaces().remove(place);
+                    userDAO.save(user);
+                }
             }
             place.setTypes(new ArrayList<>());
             placeDAO.deleteById(id);
@@ -105,6 +111,32 @@ public class PlaceService {
                 .map(PlaceService::convertPlaceToPlaceDTO)
                 .collect(Collectors.toList());
         return itemListService.createResponseEntity(places, itemsOnPage, page, old);
+    }
+
+    public ResponseEntity<ItemListDTO<PlaceDTO>> findAllActivatedPlaces(Integer page) {
+        boolean old = false;
+        int itemsOnPage = 10;
+        List<PlaceDTO> places = placeDAO.findAllByActivatedTrue()
+                .stream()
+                .map(PlaceService::convertPlaceToPlaceDTO)
+                .collect(Collectors.toList());
+        if (places.size() != 0) {
+            return itemListService.createResponseEntity(places, itemsOnPage, page, old);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<ItemListDTO<PlaceDTO>> findAllNotActivatedPlaces(Integer page) {
+        boolean old = false;
+        int itemsOnPage = 10;
+        List<PlaceDTO> places = placeDAO.findAllByActivatedFalse()
+                .stream()
+                .map(PlaceService::convertPlaceToPlaceDTO)
+                .collect(Collectors.toList());
+        if (places.size() != 0) {
+            return itemListService.createResponseEntity(places, itemsOnPage, page, old);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
@@ -137,20 +169,19 @@ public class PlaceService {
         return false;
     }
 
-    public ResponseEntity<ItemListDTO<PlaceDTO>> findPlacesByUserLogin(Integer page,String userLogin){
+    public ResponseEntity<ItemListDTO<PlaceDTO>> findPlacesByUserLogin(Integer page, String userLogin) {
         boolean old = false;
         int itemsOnPage = 10;
-        List<Place> places=placeDAO.findAllByUser_Login(userLogin).orElse(new ArrayList<>());
-        if (places.size()!=0){
-            List<PlaceDTO> placeDTOS=places
+        List<Place> places = placeDAO.findAllByUser_Login(userLogin).orElse(new ArrayList<>());
+        if (places.size() != 0) {
+            List<PlaceDTO> placeDTOS = places
                     .stream()
                     .map(PlaceService::convertPlaceToPlaceDTO)
                     .collect(Collectors.toList());
-            return itemListService.createResponseEntity(placeDTOS,itemsOnPage,page,old);
+            return itemListService.createResponseEntity(placeDTOS, itemsOnPage, page, old);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-
     }
+
 
 }

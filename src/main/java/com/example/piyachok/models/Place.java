@@ -31,7 +31,7 @@ public class Place {
     private WorkSchedule workSchedule;
 
 
-    private boolean isActivated;
+    private boolean activated = false;
     private String description;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -97,7 +97,7 @@ public class Place {
         this.photo = photo;
         this.address = address;
         this.workSchedule = workSchedule;
-        this.isActivated = isActivated;
+        this.activated = isActivated;
         this.description = description;
         this.contacts = contacts;
         this.averageCheck = averageCheck;
@@ -110,7 +110,7 @@ public class Place {
         this.photo = photo;
         this.address = address;
         this.workSchedule = workSchedule;
-        this.isActivated = isActivated;
+        this.activated = isActivated;
         this.description = description;
         this.contacts = contacts;
         this.averageCheck = averageCheck;

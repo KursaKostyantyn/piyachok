@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,12 +15,13 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@Table(name = "types")
-@Entity
+@Entity(name = "types")
 public class Type {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(unique = true)
     private String name;
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)

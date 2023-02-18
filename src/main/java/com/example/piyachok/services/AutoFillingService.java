@@ -92,6 +92,7 @@ public class AutoFillingService {
                 contact,
                 580);
         place.setTypes(new ArrayList<>());
+        place.setActivated(true);
         return place;
     }
 

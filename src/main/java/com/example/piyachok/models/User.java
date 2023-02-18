@@ -30,9 +30,10 @@ public class User {
     private Role role = Role.ROLE_ADMIN;
     private boolean isActivated;
     private boolean isBlocked;
-    private LocalDate creationDate =LocalDate.now();
+    private LocalDate creationDate = LocalDate.now();
     private String resetPasswordToken;
     private long resetPasswordTokenExpiryDate;
+    private String photo;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "user-place")
@@ -64,7 +65,7 @@ public class User {
     @ToString.Exclude
     private List<Comment> comments;
 
-    @OneToMany(cascade =CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_rating",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -89,9 +90,6 @@ public class User {
     private List<Place> favoritePlaces;
 
 
-
-
-
     public User(String login, String firstName, String lastName, String password, LocalDate birthDate, String email, Role role, boolean isActivated, boolean isBlocked, List<Place> places, List<News> news) {
         this.login = login;
         this.firstName = firstName;
@@ -103,6 +101,6 @@ public class User {
         this.isActivated = isActivated;
         this.isBlocked = isBlocked;
         this.places = places;
-        this.news=news;
+        this.news = news;
     }
 }
