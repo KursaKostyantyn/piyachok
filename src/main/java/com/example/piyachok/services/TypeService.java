@@ -40,7 +40,7 @@ public class TypeService {
 
     public ResponseEntity<TypeDTO> saveType(Type type) {
         if (type != null) {
-            type.setPlace(new ArrayList<>());
+            type.setPlaces(new ArrayList<>());
             typeDAO.save(type);
             return new ResponseEntity<>(convertTypeToTypeDTO(type), HttpStatus.OK);
         }
@@ -55,7 +55,7 @@ public class TypeService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<TypeDTO> updateType(int typeId, TypeDTO typeDTO ){
+    public ResponseEntity<TypeDTO> updateTypeById(int typeId, TypeDTO typeDTO ){
         Type type=typeDAO.findById(typeId).orElse(new Type());
         if (type.getId()!=0){
             type.setName(typeDTO.getName());
@@ -67,7 +67,7 @@ public class TypeService {
 
     public ResponseEntity<Integer> deleteTypeById(int typeId){
         Type type=typeDAO.findById(typeId).orElse(new Type());
-        List<Place> places = type.getPlace();
+        List<Place> places = type.getPlaces();
         for (Place place:places){
             place.getTypes().remove(type);
         }

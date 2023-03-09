@@ -25,20 +25,7 @@ public class SearchService {
     private ItemListService itemListService;
 
 
-    public ResponseEntity<ItemListDTO<PlaceDTO>> findPLaceByName(String placeName, Integer page, Boolean old) {
-        int itemsOnPage = 10;
-        List<Place> places = placeDAO.findAll();
-        if (places.size() != 0) {
-            List<PlaceDTO> placeDTOS = new ArrayList<>();
-            for (Place place : places) {
-                if (place.getName().toLowerCase().contains(placeName.toLowerCase())) {
-                    placeDTOS.add(PlaceService.convertPlaceToPlaceDTO(place));
-                }
-            }
-            return itemListService.createResponseEntity(placeDTOS, itemsOnPage, page, old);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+
 
     public List<Type> getAllTypes(List<Integer> typesId) {
         List<Type> types = new ArrayList<>();

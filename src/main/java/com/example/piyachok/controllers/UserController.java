@@ -59,28 +59,28 @@ public class UserController {
     }
 
     @DeleteMapping("users/favoritePlaces/delete")
-    public ResponseEntity<UserDTO> deletePlaceFromFavoriteByPlaceIdUserLogin(@RequestParam int placeId,@RequestParam String login){
-        return userService.deletePlaceFromFavoriteByPlaceIdUserLogin(placeId,login);
+    public ResponseEntity<UserDTO> deletePlaceFromFavoriteByPlaceIdUserLogin(@RequestParam int placeId, @RequestParam String login) {
+        return userService.deletePlaceFromFavoriteByPlaceIdUserLogin(placeId, login);
     }
 
     @GetMapping("activate")
-    public ResponseEntity<UserDTO> activateUser (@RequestParam String activateToken){
+    public ResponseEntity<UserDTO> activateUser(@RequestParam String activateToken) {
         return userService.activateUser(activateToken);
     }
 
     @GetMapping("users/sendResetPasswordToken")
-    public ResponseEntity<HttpStatus> sendResetPasswordToken(@RequestParam String userLogin){
+    public ResponseEntity<HttpStatus> sendResetPasswordToken(@RequestParam String userLogin) {
         return userService.sendResetPasswordToken(userLogin);
     }
 
     @GetMapping("users/resetPassword")
-    public ResponseEntity<UserDTO> resetPasswordAndSetNew(@RequestParam String userLogin,@RequestParam String password,@RequestParam String resetPasswordToken){
+    public ResponseEntity<UserDTO> resetPasswordAndSetNew(@RequestParam String userLogin, @RequestParam String password, @RequestParam String resetPasswordToken) {
         return userService.resetPasswordAndSetNew(userLogin, password, resetPasswordToken);
     }
 
     @PutMapping("users/addPhoto")
-    public ResponseEntity<UserDTO> addPhotoToUserByLogin(@RequestParam String login, @RequestParam MultipartFile photo){
-return userService.addPhotoToUserByLogin(login, photo);
+    public ResponseEntity<UserDTO> addPhotoToUserByLogin(@RequestParam String login, @RequestParam MultipartFile photo) {
+        return userService.addPhotoToUserByLogin(login, photo);
     }
 
 

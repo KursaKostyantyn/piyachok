@@ -17,13 +17,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,9 +82,9 @@ public class UserService {
 
         if (user.getLogin() != null) {
             for (Place place : user.getPlaces()) {
-                List<Type> allByPlace = typeDAO.findAllByPlace(place);
+                List<Type> allByPlace = typeDAO.findAllByPlacesContaining(place);
                 for (Type type : allByPlace) {
-                    type.getPlace().remove(place);
+                    type.getPlaces().remove(place);
                     typeDAO.save(type);
                 }
             }

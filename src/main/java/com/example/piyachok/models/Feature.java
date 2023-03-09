@@ -1,42 +1,40 @@
 package com.example.piyachok.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
-
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@Entity(name = "types")
-public class Type {
+@Entity (name = "features")
+public class Feature {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @Column(unique = true)
     private String name;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(
-            name = "places_types",
-            joinColumns = @JoinColumn(name = "type_id"),
+            name = "places_features",
+            joinColumns = @JoinColumn(name = "feature_id"),
             inverseJoinColumns = @JoinColumn(name = "place_id")
     )
 //    @JsonIgnore
     @ToString.Exclude
     private List<Place> places;
 
-
-    public Type(String name) {
+    public Feature(String name) {
         this.name = name;
     }
 
-    public Type(String name, List<Place> places) {
+    public Feature(String name, List<Place> places) {
         this.name = name;
         this.places = places;
     }

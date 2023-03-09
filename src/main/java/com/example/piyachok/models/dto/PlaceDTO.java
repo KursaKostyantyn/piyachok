@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,5 +31,7 @@ public class PlaceDTO {
     private int  userId;
     private double averageRating;
     private List<News> news;
+    private Set<String> photos;
+    private List<Feature> features;
 
 }

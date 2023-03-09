@@ -17,10 +17,7 @@ import java.util.List;
 public class SearchController {
     private SearchService searchService;
 
-    @GetMapping("/findPLaceByName")
-    public ResponseEntity<ItemListDTO<PlaceDTO>> findPLaceByName(@RequestParam String placeName, @RequestParam(required = false) Integer page,@RequestParam(required = false) Boolean old){
-        return searchService.findPLaceByName(placeName,page,old);
-    }
+
 
     @GetMapping("/findPLaceByTypesId")
     public ResponseEntity<ItemListDTO<PlaceDTO>> findPLaceByTypes(@RequestParam List<Integer> typesId, @RequestParam(required = false) Integer page, @RequestParam(required = false) Boolean old){

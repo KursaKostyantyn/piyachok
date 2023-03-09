@@ -1,12 +1,16 @@
 package com.example.piyachok.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +23,7 @@ public class Place {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    private String photo;
+//    private String photo;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "passport_id", referencedColumnName = "id")
@@ -41,7 +45,7 @@ public class Place {
 
     private int averageCheck;
     private LocalDate creationDate = LocalDate.now();
-    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "places_types",
             joinColumns = @JoinColumn(name = "place_id"),
@@ -51,13 +55,22 @@ public class Place {
     @ToString.Exclude
     private List<Type> types;
 
+    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "place_features",
+            joinColumns = @JoinColumn(name = "place_id"),
+            inverseJoinColumns = @JoinColumn(name = "feature_id")
+    )
+    @ToString.Exclude
+    private List<Feature> features;
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_places",
             joinColumns = @JoinColumn(name = "place_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    @JsonBackReference (value = "user-place")
+    @JsonBackReference(value = "user-place")
     @ToString.Exclude
     private User user;
 
@@ -92,9 +105,13 @@ public class Place {
     private List<Rating> ratings;
 
 
-    public Place(String name, String photo, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck, List<Type> types, List<News> news) {
+    @ElementCollection
+    private Set<String> photos = new HashSet<>();
+
+
+    public Place(String name, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck, List<Type> types, List<News> news) {
         this.name = name;
-        this.photo = photo;
+
         this.address = address;
         this.workSchedule = workSchedule;
         this.activated = isActivated;
@@ -105,9 +122,8 @@ public class Place {
         this.news = news;
     }
 
-    public Place(String name, String photo, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck) {
+    public Place(String name, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck) {
         this.name = name;
-        this.photo = photo;
         this.address = address;
         this.workSchedule = workSchedule;
         this.activated = isActivated;

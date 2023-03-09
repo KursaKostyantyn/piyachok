@@ -8,10 +8,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TypeDAO extends JpaRepository<Type,Integer> {
+public interface TypeDAO extends JpaRepository<Type, Integer> {
 
-    public Type getTypeByName(String name);
+    Type getTypeByName(String name);
 
-    public List<Type> findAllByPlace(Place place);
+    List<Type> findAllByPlacesContaining(Place place);
+
 
 }

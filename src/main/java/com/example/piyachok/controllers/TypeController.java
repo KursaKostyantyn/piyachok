@@ -5,11 +5,8 @@ import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.TypeDTO;
 import com.example.piyachok.services.TypeService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -34,7 +31,7 @@ public class TypeController {
 
     @PutMapping("/{typeId}")
     public ResponseEntity<TypeDTO> updateType(@PathVariable int typeId, @RequestBody TypeDTO typeDTO) {
-        return typeService.updateType(typeId, typeDTO);
+        return typeService.updateTypeById(typeId, typeDTO);
     }
 
     @DeleteMapping("/{typeId}")
