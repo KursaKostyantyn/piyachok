@@ -17,7 +17,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy ="refreshToken" )
+    @OneToOne(cascade = {CascadeType.MERGE}, mappedBy ="refreshToken" )
     @ToString.Exclude
     @JsonBackReference(value = "user-refreshToken")
     private User user;

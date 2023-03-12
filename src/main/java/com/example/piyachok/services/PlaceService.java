@@ -1,11 +1,13 @@
 package com.example.piyachok.services;
 
+import com.example.piyachok.dao.FeatureDAO;
 import com.example.piyachok.dao.PlaceDAO;
 import com.example.piyachok.dao.TypeDAO;
 import com.example.piyachok.dao.UserDAO;
 import com.example.piyachok.models.*;
 import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.PlaceDTO;
+import com.example.piyachok.models.dto.TypeDTO;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
@@ -27,9 +29,12 @@ public class PlaceService {
     private PlaceDAO placeDAO;
     private UserDAO userDAO;
     private TypeDAO typeDAO;
+    private FeatureDAO featureDAO;
     private ItemListService itemListService;
 
+
     public static PlaceDTO convertPlaceToPlaceDTO(Place place) {
+
         PlaceDTO placeDTO = new PlaceDTO();
         placeDTO.setId(place.getId());
         placeDTO.setName(place.getName());
@@ -41,10 +46,11 @@ public class PlaceService {
         placeDTO.setContacts(place.getContacts());
         placeDTO.setAverageCheck(place.getAverageCheck());
         placeDTO.setCreationDate(place.getCreationDate());
-        placeDTO.setTypes(place.getTypes());
+        placeDTO.setTypes(place.getTypes().stream().map(TypeService::convertTypeToTypeDTO).collect(Collectors.toList()));
         placeDTO.setUserId(place.getUser().getId());
-        placeDTO.setNews(place.getNews());
+        placeDTO.setNews(place.getNews().stream().map(NewsService::convertNewsToNewsDTO).collect(Collectors.toList()));
         placeDTO.setAverageRating(calculateAverageRating(place.getRatings()));
+        placeDTO.setFeatures(place.getFeatures().stream().map(FeaturesService::convertFeatureToFeatureDTO).collect(Collectors.toList()));
         return placeDTO;
     }
 
@@ -59,28 +65,31 @@ public class PlaceService {
     }
 
     public ResponseEntity<PlaceDTO> savePlace(int userId, Place place) {
-
         User user = userDAO.findById(userId).orElse(new User());
+
         if (place != null && user.getLogin() != null) {
             place.setUser(user);
+            place.setRatings(new ArrayList<>());
             place.setNews(new ArrayList<>());
             List<Type> types = place.getTypes();
             place.setTypes(new ArrayList<>());
             for (Type type : types) {
-                Type typeByName = typeDAO.getTypeByName(type.getName());
-                if (typeByName != null) {
+                Type typeByName = typeDAO.getTypeByName(type.getName()).orElse(new Type());
+                if (typeByName.getName() != null) {
                     place.getTypes().add(typeByName);
                 }
             }
+            place.setFeatures(new ArrayList<>());
+            List<Feature> features = place.getFeatures();
+            features.forEach(feature -> {
+                Feature featureFromDAO = featureDAO.findByName(feature.getName()).orElse(new Feature());
+                if (featureFromDAO.getId() != 0) {
+                    place.getFeatures().add(featureFromDAO);
+                }
+            });
             placeDAO.save(place);
             return new ResponseEntity<>(convertPlaceToPlaceDTO(place), HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
-    public ResponseEntity<PlaceDTO> savePlaceWithPhoto(int userId, Place place) {
-
-
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
@@ -122,12 +131,12 @@ public class PlaceService {
                                                                         Boolean old,
                                                                         Boolean rating,
                                                                         Boolean averageCheck) {
-        System.out.println(rating);
         int itemsOnPage = 10;
         List<PlaceDTO> places = placeDAO.findAllByActivatedTrue()
                 .stream()
                 .map(PlaceService::convertPlaceToPlaceDTO)
                 .collect(Collectors.toList());
+
         if (alphabet != null) {
             places = sortByAlphabet(places, alphabet);
         }
@@ -159,7 +168,7 @@ public class PlaceService {
     }
 
     private List<PlaceDTO> sortByRating(List<PlaceDTO> places, boolean rating) {
-        System.out.println(rating);
+
         if (rating) {
             places = places
                     .stream()
@@ -211,12 +220,46 @@ public class PlaceService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<PlaceDTO> updatePlaceById(int id, Place place) {
-        Place oldPlace = placeDAO.findById(id).orElse(new Place());
+    public ResponseEntity<PlaceDTO> updatePlaceById(int placeId, Place place) {
+        Place oldPlace = placeDAO.findById(placeId).orElse(new Place());
+
         if (oldPlace.getName() != null) {
-            place.setId(id);
-            placeDAO.save(place);
-            return new ResponseEntity<>(convertPlaceToPlaceDTO(place), HttpStatus.OK);
+            List<Type> types = typeDAO.findAllByPlacesContaining(oldPlace);
+            types.forEach(type -> {
+                type.getPlaces().remove(oldPlace);
+                typeDAO.save(type);
+            });
+            types = new ArrayList<>();
+            for (Type type : place.getTypes()) {
+                Type typeFromDAO = typeDAO.getTypeByName(type.getName()).orElse(new Type());
+                if (typeFromDAO.getId() != 0) {
+                    types.add(typeFromDAO);
+                }
+            }
+            List<Feature> features = featureDAO.findAllByPlacesContaining(oldPlace);
+            features.forEach(feature -> {
+                feature.getPlaces().remove(oldPlace);
+                featureDAO.save(feature);
+            });
+            features = new ArrayList<>();
+            for (Feature feature : place.getFeatures()) {
+                Feature featureFromDAO = featureDAO.findByName(feature.getName()).orElse(new Feature());
+                if (featureFromDAO.getId() != 0) {
+                    features.add(featureFromDAO);
+                }
+            }
+
+            place.getWorkSchedule().setId(oldPlace.getId());
+            oldPlace.setName(place.getName());
+            oldPlace.setAddress(place.getAddress());
+            oldPlace.setWorkSchedule(place.getWorkSchedule());
+            oldPlace.setActivated(place.isActivated());
+            oldPlace.setDescription(place.getDescription());
+            oldPlace.setContacts(place.getContacts());
+            oldPlace.setTypes(types);
+            oldPlace.setFeatures(features);
+            placeDAO.save(oldPlace);
+            return new ResponseEntity<>(convertPlaceToPlaceDTO(oldPlace), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

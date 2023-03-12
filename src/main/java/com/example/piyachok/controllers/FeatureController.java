@@ -20,9 +20,9 @@ public class FeatureController {
         return featuresService.findAllFeatures(page);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<FeatureDTO> findFeatureById(@PathVariable int id) {
-        return featuresService.findFeatureById(id);
+    @GetMapping("/{featureId}")
+    public ResponseEntity<FeatureDTO> findFeatureById(@PathVariable int featureId) {
+        return featuresService.findFeatureById(featureId);
     }
 
     @PostMapping("")
@@ -31,13 +31,13 @@ public class FeatureController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FeatureDTO> updateDeatureById(@PathVariable int id, @RequestBody FeatureDTO featureDTO) {
+    public ResponseEntity<FeatureDTO> updateFeatureById(@PathVariable int id, @RequestBody FeatureDTO featureDTO) {
         return featuresService.updateFeatureById(featureDTO, id);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteFeatureById(@PathVariable int id){
-        return featuresService.deleteFeatureById(id);
+    @DeleteMapping("/{featureId}")
+    public ResponseEntity<HttpStatus> deleteFeatureById(@PathVariable int featureId){
+        return featuresService.deleteFeatureById(featureId);
     }
 
 

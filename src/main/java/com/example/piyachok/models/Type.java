@@ -21,14 +21,14 @@ public class Type {
     @Column(unique = true)
     private String name;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "places_types",
             joinColumns = @JoinColumn(name = "type_id"),
             inverseJoinColumns = @JoinColumn(name = "place_id")
     )
-//    @JsonIgnore
     @ToString.Exclude
+    @JsonIgnore
     private List<Place> places;
 
 

@@ -23,7 +23,7 @@ public class NewsService {
 
     private ItemListService itemListService;
 
-    public NewsDTO convertNewsToNewsDTO(News news) {
+    public static NewsDTO convertNewsToNewsDTO(News news) {
         NewsDTO newsDTO = new NewsDTO();
         newsDTO.setId(news.getId());
         newsDTO.setCategory(news.getCategory());
@@ -31,9 +31,7 @@ public class NewsService {
         newsDTO.setCreationDate(news.getCreationDate());
         newsDTO.setText(news.getText());
         newsDTO.setPlaceId(news.getPlace().getId());
-        newsDTO.setPlaceName(news.getPlace().getName());
         newsDTO.setUserId(news.getUser().getId());
-        newsDTO.setUserLogin(news.getUser().getLogin());
         return newsDTO;
     }
 
@@ -50,7 +48,7 @@ public class NewsService {
 
         List<NewsDTO> newsDTOList = newsDAO.findAll()
                 .stream()
-                .map(this::convertNewsToNewsDTO)
+                .map(NewsService::convertNewsToNewsDTO)
                 .collect(Collectors.toList());
 
         return itemListService.createResponseEntity(newsDTOList, itemsOnPage, page, old);
@@ -88,7 +86,7 @@ public class NewsService {
         List<NewsDTO> newsDTOList = newsDAO.findAll()
                 .stream()
                 .filter(news -> news.getCategory() == Category.MAIN)
-                .map(this::convertNewsToNewsDTO)
+                .map(NewsService::convertNewsToNewsDTO)
                 .collect(Collectors.toList());
         return itemListService.createResponseEntity(newsDTOList, itemsOnPage, page, old);
     }
@@ -100,7 +98,7 @@ public class NewsService {
         }
         List<NewsDTO> newsDTOList = newsDAO.findNewsByUserId(userId)
                 .stream()
-                .map(this::convertNewsToNewsDTO)
+                .map(NewsService::convertNewsToNewsDTO)
                 .collect(Collectors.toList());
         return itemListService.createResponseEntity(newsDTOList, itemsOnPage, page, old);
     }

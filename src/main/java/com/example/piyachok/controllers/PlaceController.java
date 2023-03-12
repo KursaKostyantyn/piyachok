@@ -9,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -40,7 +38,7 @@ public class PlaceController {
         return placeService.findPlaceById(id);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{placeId}")
     public ResponseEntity<PlaceDTO> updatePlaceById(@PathVariable int placeId, @RequestBody Place place) {
         return placeService.updatePlaceById(placeId, place);
     }

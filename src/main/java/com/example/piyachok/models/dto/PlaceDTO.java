@@ -27,11 +27,11 @@ public class PlaceDTO {
     private Contact contacts;
     private int averageCheck;
     private LocalDate creationDate;
-    private List<Type> types;
+    private List<TypeDTO> types;
     private int  userId;
     private double averageRating;
-    private List<News> news;
+    private List<NewsDTO> news;
     private Set<String> photos;
-    private List<Feature> features;
+    private List<FeatureDTO> features;
 
 }

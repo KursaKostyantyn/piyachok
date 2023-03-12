@@ -20,7 +20,7 @@ public class Feature {
     @Column(unique = true)
     private String name;
 
-    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "places_features",
             joinColumns = @JoinColumn(name = "feature_id"),
@@ -28,6 +28,7 @@ public class Feature {
     )
 //    @JsonIgnore
     @ToString.Exclude
+    @JsonIgnore
     private List<Place> places;
 
     public Feature(String name) {

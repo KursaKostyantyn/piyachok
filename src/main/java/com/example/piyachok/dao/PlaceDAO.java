@@ -1,5 +1,6 @@
 package com.example.piyachok.dao;
 
+import com.example.piyachok.models.Feature;
 import com.example.piyachok.models.Place;
 import com.example.piyachok.models.Type;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,5 +19,6 @@ public interface PlaceDAO extends JpaRepository<Place, Integer> {
     List<Place> findAllByActivatedTrue();
 
     List<Place> findAllByActivatedFalse();
+    List<Place> findAllByFeaturesContaining(Feature feature);
 
 }

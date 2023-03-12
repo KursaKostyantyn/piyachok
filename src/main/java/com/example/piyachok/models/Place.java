@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -45,7 +47,7 @@ public class Place {
 
     private int averageCheck;
     private LocalDate creationDate = LocalDate.now();
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "places_types",
             joinColumns = @JoinColumn(name = "place_id"),
@@ -53,15 +55,17 @@ public class Place {
     )
 
     @ToString.Exclude
+    @Fetch(FetchMode.SELECT)
     private List<Type> types;
 
-    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "place_features",
             joinColumns = @JoinColumn(name = "place_id"),
             inverseJoinColumns = @JoinColumn(name = "feature_id")
     )
     @ToString.Exclude
+    @Fetch(FetchMode.SELECT)
     private List<Feature> features;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
@@ -74,7 +78,7 @@ public class Place {
     @ToString.Exclude
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference(value = "place-news")
     @JoinTable(
             name = "places_news",
@@ -82,9 +86,10 @@ public class Place {
             inverseJoinColumns = @JoinColumn(name = "news_id")
     )
     @ToString.Exclude
+    @Fetch(FetchMode.SELECT)
     private List<News> news;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "places_comments",
             joinColumns = @JoinColumn(name = "place_id"),
@@ -92,9 +97,10 @@ public class Place {
     )
     @JsonManagedReference(value = "place-comment")
     @ToString.Exclude
+    @Fetch(FetchMode.SELECT)
     private List<Comment> comments;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "places_rating",
             joinColumns = @JoinColumn(name = "place_id"),
@@ -102,10 +108,11 @@ public class Place {
     )
     @JsonManagedReference(value = "place-rating")
     @ToString.Exclude
+    @Fetch(FetchMode.SELECT)
     private List<Rating> ratings;
 
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> photos = new HashSet<>();
 
 

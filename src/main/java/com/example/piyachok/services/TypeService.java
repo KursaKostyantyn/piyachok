@@ -30,7 +30,7 @@ public class TypeService {
     }
 
     public ResponseEntity<ItemListDTO<TypeDTO>> findAllTypes(Integer page, Boolean old) {
-        int itemsOnPage = 2;
+        int itemsOnPage = 10;
         List<TypeDTO> types = typeDAO.findAll().stream().map(TypeService::convertTypeToTypeDTO).collect(Collectors.toList());
         if (types.size() != 0) {
             return itemListService.createResponseEntity(types, itemsOnPage, page, old);

@@ -6,11 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TypeDAO extends JpaRepository<Type, Integer> {
 
-    Type getTypeByName(String name);
+    Optional<Type> getTypeByName(String name);
+
 
     List<Type> findAllByPlacesContaining(Place place);
 

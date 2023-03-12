@@ -17,7 +17,7 @@ public class Comment {
     private int id;
     private String text;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "places_comments",
             joinColumns = @JoinColumn(name = "comment_id"),

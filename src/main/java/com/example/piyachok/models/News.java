@@ -2,7 +2,10 @@ package com.example.piyachok.models;
 
 import com.example.piyachok.constants.Category;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -22,7 +25,7 @@ public class News {
     private LocalDate creationDate = LocalDate.now();
     private String text;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "places_news",
             joinColumns = @JoinColumn(name = "news_id"),
@@ -30,9 +33,10 @@ public class News {
     )
     @JsonBackReference(value = "place-news")
     @ToString.Exclude
+
     private Place place;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_news",
             joinColumns = @JoinColumn(name = "news_id"),
