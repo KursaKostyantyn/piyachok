@@ -60,7 +60,7 @@ public class Place {
 
     @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(
-            name = "place_features",
+            name = "places_features",
             joinColumns = @JoinColumn(name = "place_id"),
             inverseJoinColumns = @JoinColumn(name = "feature_id")
     )

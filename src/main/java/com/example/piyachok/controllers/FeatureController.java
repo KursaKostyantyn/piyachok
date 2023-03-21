@@ -30,9 +30,9 @@ public class FeatureController {
         return featuresService.saveFeature(feature);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<FeatureDTO> updateFeatureById(@PathVariable int id, @RequestBody FeatureDTO featureDTO) {
-        return featuresService.updateFeatureById(featureDTO, id);
+    @PutMapping("/{featureId}")
+    public ResponseEntity<FeatureDTO> updateFeatureById(@PathVariable int featureId, @RequestBody FeatureDTO featureDTO) {
+        return featuresService.updateFeatureById(featureDTO, featureId);
     }
 
     @DeleteMapping("/{featureId}")

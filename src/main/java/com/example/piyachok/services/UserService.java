@@ -1,12 +1,11 @@
 package com.example.piyachok.services;
 
+import com.example.piyachok.constants.Role;
+import com.example.piyachok.dao.FeatureDAO;
 import com.example.piyachok.dao.PlaceDAO;
 import com.example.piyachok.dao.TypeDAO;
 import com.example.piyachok.dao.UserDAO;
-import com.example.piyachok.models.News;
-import com.example.piyachok.models.Place;
-import com.example.piyachok.models.Type;
-import com.example.piyachok.models.User;
+import com.example.piyachok.models.*;
 import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.PlaceDTO;
 import com.example.piyachok.models.dto.UserDTO;
@@ -38,7 +37,7 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
     private MailService mailService;
     private JwtUtils jwtUtils;
-
+    private FeatureDAO featureDAO;
     private TypeDAO typeDAO;
 
 
@@ -81,16 +80,28 @@ public class UserService {
         User user = userDAO.findById(id).orElse(new User());
 
         if (user.getLogin() != null) {
-            for (Place place : user.getPlaces()) {
-                List<Type> allByPlace = typeDAO.findAllByPlacesContaining(place);
-                for (Type type : allByPlace) {
-                    type.getPlaces().remove(place);
-                    typeDAO.save(type);
-                }
+            if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                    SecurityService.getLoginAuthorizedUser().equals(user.getLogin()))) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
-            user.setFavoritePlaces(new ArrayList<>());
+//todo delete
+            //            List<Place> places=user.getPlaces();
+//            for (Place place : places) {
+//                List<Type> allByPlace = typeDAO.findAllByPlacesContaining(place);
+//                for (Type type : allByPlace) {
+//                    type.getPlaces().remove(place);
+//                    typeDAO.save(type);
+//                }
+//            }
+//            for (Place place : places) {
+//                List<Feature> allByPlace = featureDAO.findAllByPlacesContaining(place);
+//                for (Feature feature : allByPlace) {
+//                    feature.getPlaces().remove(place);
+//                    featureDAO.save(feature);
+//                }
+//            }
+//            user.setFavoritePlaces(new ArrayList<>());
             userDAO.deleteById(id);
-
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -121,6 +132,10 @@ public class UserService {
     public ResponseEntity<UserDTO> updateUserById(int id, User user) {
         User oldUser = userDAO.findById(id).orElse(new User());
         if (oldUser.getLogin() != null) {
+            if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                    SecurityService.getLoginAuthorizedUser().equals(oldUser.getLogin()))) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
             if (!user.getPassword().equals("")) {
                 oldUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }
@@ -155,6 +170,10 @@ public class UserService {
         User user = userDAO.findUserByLogin(login).orElse(new User());
 
         if (user.getLogin() != null) {
+            if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                    SecurityService.getLoginAuthorizedUser().equals(user.getLogin()))) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
             List<PlaceDTO> placeDTOS = user.getFavoritePlaces()
                     .stream()
                     .map(PlaceService::convertPlaceToPlaceDTO).collect(Collectors.toList());
@@ -259,24 +278,28 @@ public class UserService {
         return stringBuilder.toString();
     }
 
-    public ResponseEntity<UserDTO> addPhotoToUserByLogin(@NonNull String login,@NonNull MultipartFile photo) {
+    public ResponseEntity<UserDTO> addPhotoToUserByLogin(@NonNull String login, @NonNull MultipartFile photo) {
 
-        User user=userDAO.findUserByLogin(login).orElse(new User());
-        if (user.getLogin()!=null){
+        User user = userDAO.findUserByLogin(login).orElse(new User());
+        if (user.getLogin() != null) {
+            if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                    SecurityService.getLoginAuthorizedUser().equals(login))) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
             String originalFilename = photo.getOriginalFilename();
             user.setPhoto(originalFilename);
             userDAO.save(user);
-            File usersPhoto = new File("src"+ File.separator+"main"+ File.separator+"resources"+File.separator+"usersPhoto");
-            if (!usersPhoto.exists()){
+            File usersPhoto = new File("src" + File.separator + "main" + File.separator + "resources" + File.separator + "usersPhoto");
+            if (!usersPhoto.exists()) {
                 usersPhoto.mkdir();
             }
-            String pathToSaveFile=usersPhoto.getAbsolutePath()+File.separator+originalFilename;
+            String pathToSaveFile = usersPhoto.getAbsolutePath() + File.separator + originalFilename;
             try {
                 photo.transferTo(new File(pathToSaveFile));
             } catch (IOException e) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(convertUserToUserDTO(user),HttpStatus.OK);
+            return new ResponseEntity<>(convertUserToUserDTO(user), HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

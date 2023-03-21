@@ -5,6 +5,7 @@ import com.example.piyachok.models.dto.CommentDTO;
 import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.services.CommentService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,12 +13,12 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("")
+@RequestMapping("comments")
 public class CommentController {
 
     private CommentService commentService;
 
-    @GetMapping("myCabinet/myComments")
+    @GetMapping("comments/myComments")
     public ResponseEntity<ItemListDTO<CommentDTO>> findCommentsByUserLogin (@RequestParam String login, @RequestParam(required = false) Integer page, @RequestParam(required = false) Boolean old){
         return commentService.findCommentsByUserLogin(login,page,old);
     }
@@ -46,6 +47,11 @@ public class CommentController {
     @GetMapping("comments")
     public ResponseEntity<ItemListDTO<CommentDTO>> findAllComments(@RequestParam(required = false) Integer page, @RequestParam(required = false) Boolean old){
         return commentService.findAllComments(page, old);
+    }
+
+    @DeleteMapping("comments/{commentId}")
+    public ResponseEntity<HttpStatus> deleteCommentById(@PathVariable int commentId){
+        return commentService.deleteCommentById(commentId);
     }
 
 

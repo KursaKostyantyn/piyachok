@@ -12,8 +12,8 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    private final long expirationTimeForAccessToken = 1000000;
-    private final long expirationTimeForRefreshToken = 10000000;
+    private final long expirationTimeForAccessToken = 10000000;
+    private final long expirationTimeForRefreshToken = 100000000;
     private final long expirationTimeForActivationUserToken = 1000000000;
 
     private String generateTokenFromUsernameAndSetExpirationTime(String userName, long expirationTime) {

@@ -51,8 +51,8 @@ public class FeaturesService {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<FeatureDTO> updateFeatureById(FeatureDTO featureDTO,int id){
-        Feature feature=featureDAO.findFeatureById(id).orElse(new Feature());
+    public ResponseEntity<FeatureDTO> updateFeatureById(FeatureDTO featureDTO,int featureId){
+        Feature feature=featureDAO.findFeatureById(featureId).orElse(new Feature());
         if (feature.getId()!=0){
             feature.setName(featureDTO.getName());
             featureDAO.save(feature);

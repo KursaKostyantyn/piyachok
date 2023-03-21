@@ -1,5 +1,6 @@
 package com.example.piyachok.services;
 
+import com.example.piyachok.constants.Role;
 import com.example.piyachok.dao.PlaceDAO;
 import com.example.piyachok.dao.RatingDAO;
 import com.example.piyachok.dao.UserDAO;
@@ -45,7 +46,10 @@ public class RatingService {
 
     public ResponseEntity<List<RatingDTO>> findRatingsByUserLogin(String login) {
         List<Rating> userRatings = ratingDAO.findAllByUser_Login(login);
-
+        if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                SecurityService.getLoginAuthorizedUser().equals(login))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         if (userRatings.size() != 0) {
             return new ResponseEntity<>(userRatings
                     .stream()
@@ -88,12 +92,11 @@ public class RatingService {
 
     private Rating checkIsExistRating(RatingDTO ratingDTO) {
         List<Rating> ratings = ratingDAO.findAllByPlaceId(ratingDTO.getPlaceId());
-        Rating matchRating = ratings
+        return ratings
                 .stream()
                 .filter(value -> value.getUser().getLogin().equals(ratingDTO.getUserLogin()))
                 .findFirst()
                 .orElse(new Rating());
-        return matchRating;
 
     }
 
@@ -101,6 +104,10 @@ public class RatingService {
     public ResponseEntity<RatingDTO> findRatingByPLaceIdAndUserLogin(int placeId, String userLogin) {
         Rating rating = ratingDAO.findRatingByPlaceIdAndUserLogin(placeId, userLogin).orElse(new Rating());
         if (rating.getPlace() != null) {
+            if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                    SecurityService.getLoginAuthorizedUser().equals(rating.getUser().getLogin()))) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
             return new ResponseEntity<>(convertRatingToRatingDTO(rating), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -109,6 +116,10 @@ public class RatingService {
     public ResponseEntity<RatingDTO> updateRating(RatingDTO ratingDTO) {
         Rating rating = ratingDAO.findRatingByPlaceIdAndUserLogin(ratingDTO.getPlaceId(), ratingDTO.getUserLogin()).orElse(new Rating());
         if (rating.getPlace() != null) {
+            if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                    SecurityService.getLoginAuthorizedUser().equals(rating.getUser().getLogin()))) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
             rating.setRating(ratingDTO.getRating());
             ratingDAO.save(rating);
             return new ResponseEntity<>(convertRatingToRatingDTO(rating), HttpStatus.OK);
@@ -119,7 +130,12 @@ public class RatingService {
     public ResponseEntity<RatingDTO> findRatingById(int myRatingsId) {
         Rating rating = ratingDAO.findById(myRatingsId).orElse(new Rating());
         if (rating.getId() != 0) {
-            return new ResponseEntity<>(convertRatingToRatingDTO(rating),HttpStatus.OK);
+            if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                    SecurityService.getLoginAuthorizedUser().equals(rating.getUser().getLogin()))) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+
+            return new ResponseEntity<>(convertRatingToRatingDTO(rating), HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

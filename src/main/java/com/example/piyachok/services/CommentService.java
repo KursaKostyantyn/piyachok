@@ -53,14 +53,14 @@ public class CommentService {
     }
 
     public ResponseEntity<ItemListDTO<CommentDTO>> findCommentsByUserLogin(String login, Integer page, Boolean old) {
-        int itemsOnPage=10;
+        int itemsOnPage = 10;
         User user = userDAO.findUserByLogin(login).orElse(new User());
         if (user.getLogin() != null) {
             List<CommentDTO> usersComments = commentDAO.findAllByUser(user)
                     .stream()
                     .map(CommentService::convertCommentToCommentDTO)
                     .collect(Collectors.toList());
-            return itemListService.createResponseEntity(usersComments,itemsOnPage,page,old);
+            return itemListService.createResponseEntity(usersComments, itemsOnPage, page, old);
 
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -69,19 +69,18 @@ public class CommentService {
     public ResponseEntity<CommentDTO> findCommentById(int commentId) {
 
         Comment comment = commentDAO.findById(commentId).orElse(new Comment());
+        if (comment.getId()!=0){
+            if (SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole())) {
+                return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
+            }
 
-        if (comment.getId() == 0) {
-            return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
+            if (SecurityService.getLoginAuthorizedUser().equals(comment.getUser().getLogin())) {
+                return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
+            }
+            if (!SecurityService.getLoginAuthorizedUser().equals(comment.getUser().getLogin())) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
         }
-
-//        todo delete?
-//        if (SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole())) {
-//            return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
-//        }
-//
-//        if (SecurityService.getLoginAuthorizedUser().equals(comment.getUser().getLogin())) {
-//            return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
-//        }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -120,11 +119,16 @@ public class CommentService {
     public ResponseEntity<CommentDTO> updateComment(CommentDTO commentDTO) {
         if (commentDTO != null) {
             Comment comment = commentDAO.findById(commentDTO.getId()).orElse(new Comment());
-
-            if (comment.getId() != 0) {
+            if (comment.getId() == 0) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            if (SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) || SecurityService.getLoginAuthorizedUser().equals(comment.getUser().getLogin())) {
                 comment.setText(commentDTO.getText());
                 commentDAO.save(comment);
                 return new ResponseEntity<>(convertCommentToCommentDTO(comment), HttpStatus.OK);
+            }
+            if (!SecurityService.getLoginAuthorizedUser().equals(comment.getUser().getLogin())) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -144,5 +148,20 @@ public class CommentService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    public ResponseEntity<HttpStatus> deleteCommentById(int id) {
+        Comment comment = commentDAO.findById(id).orElse(new Comment());
+        if (comment.getId() == 0) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) ||
+                SecurityService.getLoginAuthorizedUser().equals(comment.getUser().getLogin())) {
+            commentDAO.delete(comment);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        if (!SecurityService.getLoginAuthorizedUser().equals(comment.getUser().getLogin())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 
 }

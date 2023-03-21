@@ -22,13 +22,8 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(value = SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<CustomErrorDTO> sqlExistError(SQLIntegrityConstraintViolationException ex) {
-        // todo delete
-//        System.out.println("ex=" + ex.getMessage());
-//        ex.getMessage().split(" ")[5].substring(1, 6) + " " +
-//                ex.getMessage().split(" ")[2] + " " +
-//                "already exist"
-
-        return new ResponseEntity<>(new CustomErrorDTO( ex.getMessage().split("'")[1] + " " + "already exist"), HttpStatus.BAD_REQUEST);
+//        return new ResponseEntity<>(new CustomErrorDTO( ex.getMessage().split("'")[1] + " " + "already exist"), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new CustomErrorDTO( ex.getMessage() + " " + "already exist"), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = UserIsNotActivatedException.class)

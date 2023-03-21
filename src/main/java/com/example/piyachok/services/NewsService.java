@@ -55,9 +55,18 @@ public class NewsService {
     }
 
     public ResponseEntity<NewsDTO> saveNews(int placeId, String login, NewsDTO newsDTO) {
+        if (newsDTO == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         News news = convertNewsDTOToNews(newsDTO);
 
-        if (placeService.addNewsToPlace(placeId, news) & userService.addNewsToUser(login, news)) {
+        if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                SecurityService.getLoginAuthorizedUser().equals(login))
+        ) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        if (placeService.addNewsToPlace(placeId, news) &
+                userService.addNewsToUser(login, news)) {
             newsDAO.save(news);
             return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
         }
@@ -69,15 +78,6 @@ public class NewsService {
         if (news.getText() != null) {
             return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
         }
-//todo delete?
-//        if (SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole())) {
-//            return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
-//        }
-//
-//        if (SecurityService.getLoginAuthorizedUser().equals(news.getUser().getLogin())) {
-//            return new ResponseEntity<>(convertNewsToNewsDTO(news), HttpStatus.OK);
-//        }
-
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -104,27 +104,28 @@ public class NewsService {
     }
 
     public ResponseEntity<NewsDTO> updateNewsById(int id, NewsDTO news) {
-        if (id == 0) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        News newsById = newsDAO.findNewsById(id).orElse(new News());
+        if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                SecurityService.getLoginAuthorizedUser().equals(newsById.getUser().getLogin()))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        News newsById = newsDAO.findNewsById(id);
-        if (newsById.getText() != null) {
+        if (newsById.getId() != 0) {
             newsById.setCategory(news.getCategory());
             newsById.setText(news.getText());
             newsById.setPaid(news.isPaid());
             newsDAO.save(newsById);
             return new ResponseEntity<>(convertNewsToNewsDTO(newsById), HttpStatus.OK);
         }
-
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<HttpStatus> deleteNewsById(int id) {
-        if (id == 0) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        News newsById = newsDAO.findNewsById(id).orElse(new News());
+        if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole())|
+                SecurityService.getLoginAuthorizedUser().equals(newsById.getUser().getLogin()))){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        News newsById = newsDAO.findNewsById(id);
-        if (newsById != null) {
+        if (newsById.getId() != 0) {
             newsDAO.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
         }

@@ -25,7 +25,6 @@ public class AuthService {
     private UserDAO userDAO;
     private RefreshTokenService refreshTokenService;
 
-
     private JwtUtils jwtUtils;
 
     private AuthenticationManager authenticationManager;
@@ -67,7 +66,7 @@ public class AuthService {
         if(userByLogin.getLogin()!=null){
             return new ResponseEntity<>(UserService.convertUserToUserDTO(userByLogin),HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
     }
 

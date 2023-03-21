@@ -1,6 +1,7 @@
 package com.example.piyachok.controllers;
 
 import com.example.piyachok.models.Place;
+import com.example.piyachok.models.Type;
 import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.PlaceDTO;
 import com.example.piyachok.services.PlaceService;
@@ -70,6 +71,16 @@ public class PlaceController {
     @GetMapping("search/findPLaceByName")
     public ResponseEntity<ItemListDTO<PlaceDTO>> findPLaceByName(@RequestParam String placeName, @RequestParam(required = false) Integer page, @RequestParam(required = false) Boolean old) {
         return placeService.findPLaceByName(placeName, page, old);
+    }
+
+    @GetMapping("filters")
+    public ResponseEntity<ItemListDTO<PlaceDTO>> filterPlaces(@RequestParam(required = false) Integer rating,
+                                                              @RequestParam(required = false) List<String> types,
+                                                              @RequestParam(required = false) Integer averageCheckFrom,
+                                                              @RequestParam(required = false) Integer averageCheckTo,
+                                                              @RequestParam(required = false) Integer page,
+                                                              @RequestParam(required = false) Boolean old){
+        return placeService.filterPlaces(rating,types,averageCheckFrom,averageCheckTo,page,old);
     }
 
 }

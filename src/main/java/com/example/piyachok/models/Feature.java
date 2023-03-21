@@ -26,7 +26,6 @@ public class Feature {
             joinColumns = @JoinColumn(name = "feature_id"),
             inverseJoinColumns = @JoinColumn(name = "place_id")
     )
-//    @JsonIgnore
     @ToString.Exclude
     @JsonIgnore
     private List<Place> places;

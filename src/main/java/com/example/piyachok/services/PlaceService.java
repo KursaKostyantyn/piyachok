@@ -1,5 +1,6 @@
 package com.example.piyachok.services;
 
+import com.example.piyachok.constants.Role;
 import com.example.piyachok.dao.FeatureDAO;
 import com.example.piyachok.dao.PlaceDAO;
 import com.example.piyachok.dao.TypeDAO;
@@ -10,6 +11,7 @@ import com.example.piyachok.models.dto.PlaceDTO;
 import com.example.piyachok.models.dto.TypeDTO;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.PlatformLoggingMXBean;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -66,6 +69,10 @@ public class PlaceService {
 
     public ResponseEntity<PlaceDTO> savePlace(int userId, Place place) {
         User user = userDAO.findById(userId).orElse(new User());
+        if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                SecurityService.getLoginAuthorizedUser().equals(user.getLogin()))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
 
         if (place != null && user.getLogin() != null) {
             place.setUser(user);
@@ -96,11 +103,21 @@ public class PlaceService {
 
     public ResponseEntity<Integer> deletePlaceById(int id) {
         Place place = placeDAO.findById(id).orElse(new Place());
+
         if (place.getName() != null) {
+            if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                    SecurityService.getLoginAuthorizedUser().equals(place.getUser().getLogin()))) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
             List<Type> allByPlace = typeDAO.findAllByPlacesContaining(place);
             for (Type type : allByPlace) {
                 type.getPlaces().remove(place);
                 typeDAO.save(type);
+            }
+            List<Feature> features=featureDAO.findAllByPlacesContaining(place);
+            for (Feature feature:features){
+                feature.getPlaces().remove(place);
+                featureDAO.save(feature);
             }
             List<User> users = userDAO.findAllByFavoritePlaces(place).orElse(new ArrayList<>());
             if (users.size() != 0) {
@@ -110,6 +127,7 @@ public class PlaceService {
                 }
             }
             place.setTypes(new ArrayList<>());
+            place.setFeatures(new ArrayList<>());
             placeDAO.deleteById(id);
             return new ResponseEntity<>(id, HttpStatus.OK);
         }
@@ -222,6 +240,10 @@ public class PlaceService {
 
     public ResponseEntity<PlaceDTO> updatePlaceById(int placeId, Place place) {
         Place oldPlace = placeDAO.findById(placeId).orElse(new Place());
+        if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                SecurityService.getLoginAuthorizedUser().equals(oldPlace.getUser().getLogin()))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
 
         if (oldPlace.getName() != null) {
             List<Type> types = typeDAO.findAllByPlacesContaining(oldPlace);
@@ -271,13 +293,16 @@ public class PlaceService {
             news.setPlace(place);
             return true;
         }
-
         return false;
     }
 
     public ResponseEntity<ItemListDTO<PlaceDTO>> findPlacesByUserLogin(Integer page, String userLogin) {
         boolean old = false;
         int itemsOnPage = 10;
+        if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                SecurityService.getLoginAuthorizedUser().equals(userLogin))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         List<Place> places = placeDAO.findAllByUser_Login(userLogin).orElse(new ArrayList<>());
         if (places.size() != 0) {
             List<PlaceDTO> placeDTOS = places
@@ -291,7 +316,10 @@ public class PlaceService {
 
     public ResponseEntity<PlaceDTO> addPhotosToPlaceById(int placeId, @NonNull List<MultipartFile> photos) {
         Place place = placeDAO.findById(placeId).orElse(new Place());
-
+        if (!(SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) |
+                SecurityService.getLoginAuthorizedUser().equals(place.getUser().getLogin()))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         if (place.getId() != 0) {
             File placesPhoto = new File("src" + File.separator + "main" + File.separator + "resources" + File.separator + "placesPhoto");
             if (!placesPhoto.exists()) {
@@ -329,5 +357,54 @@ public class PlaceService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    public ResponseEntity<ItemListDTO<PlaceDTO>> filterPlaces(Integer rating, List<String> types, Integer averageCheckFrom, Integer averageCheckTo, Integer page, boolean old) {
+        int itemsOnPage = 10;
+        if (averageCheckFrom > averageCheckTo) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        List<Place> places = placeDAO.findAll();
+
+        places = filterPlacesByRating(places, rating);
+        places = filterPlacesByAverageCheckFrom(places, averageCheckFrom);
+        places = filterPlacesByAverageCheckTo(places, averageCheckTo);
+
+        if (types != null) {
+            List<Type> typeList = new ArrayList<>();
+            types.forEach(type -> {
+                Type typeFromDAO = typeDAO.getTypeByName(type).orElse(new Type());
+                if (typeFromDAO.getId() != 0) {
+                    typeList.add(typeFromDAO);
+                }
+            });
+            places = filterPlacesByTypes(places, typeList);
+        }
+        List<PlaceDTO> placeDTOS = places.stream().map(PlaceService::convertPlaceToPlaceDTO).collect(Collectors.toList());
+        return new ResponseEntity<>(itemListService.createItemList(placeDTOS, itemsOnPage, page, old), HttpStatus.OK);
+    }
+
+    private List<Place> filterPlacesByRating(List<Place> places, int rating) {
+        return places.stream().filter(place -> calculateAverageRating(place.getRatings()) >= rating).collect(Collectors.toList());
+    }
+
+    private List<Place> filterPlacesByAverageCheckFrom(List<Place> places, int averageCheckFrom) {
+        return places.stream().filter(place -> place.getAverageCheck() >= averageCheckFrom).collect(Collectors.toList());
+    }
+
+    private List<Place> filterPlacesByAverageCheckTo(List<Place> places, int averageCheckTo) {
+        return places.stream().filter(place -> place.getAverageCheck() <= averageCheckTo).collect(Collectors.toList());
+    }
+
+    private List<Place> filterPlacesByTypes(List<Place> places, List<Type> types) {
+        List<Place> filteredPlaces = new ArrayList<>();
+        for (Type type : types) {
+            places.forEach(place -> {
+                if (place.getTypes().contains(type)) {
+                    filteredPlaces.add(place);
+                }
+            });
+        }
+        return filteredPlaces;
+    }
 
 }
