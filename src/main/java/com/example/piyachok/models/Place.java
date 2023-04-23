@@ -109,11 +109,23 @@ public class Place {
     @JsonManagedReference(value = "place-rating")
     @ToString.Exclude
     @Fetch(FetchMode.SELECT)
-    private List<Rating> ratings;
+    private List<Rating> ratings=new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "places_piyachok",
+            joinColumns = @JoinColumn(name = "place_id"),
+            inverseJoinColumns = @JoinColumn(name = "piyachok_id")
+    )
+    @ToString.Exclude
+    @JsonManagedReference(value = "place-piyachok")
+    @Fetch(FetchMode.SELECT)
+    private List<Piaychok> piaychoks=new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> photos = new HashSet<>();
+
+
 
 
     public Place(String name, Address address, WorkSchedule workSchedule, boolean isActivated, String description, Contact contacts, int averageCheck, List<Type> types, List<News> news) {

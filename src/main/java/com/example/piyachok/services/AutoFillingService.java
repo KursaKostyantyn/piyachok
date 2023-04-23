@@ -1,6 +1,7 @@
 package com.example.piyachok.services;
 
 import com.example.piyachok.constants.Category;
+import com.example.piyachok.constants.Gender;
 import com.example.piyachok.constants.Role;
 import com.example.piyachok.dao.FeatureDAO;
 import com.example.piyachok.dao.PlaceDAO;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -60,6 +62,16 @@ public class AutoFillingService {
         newsList.add(news4);
         newsList.add(news5);
         return newsList;
+    }
+
+    private Piaychok autoCreateNewPiyachok(){
+        Piaychok piaychok=new Piaychok();
+        piaychok.setDate(new Date());
+        piaychok.setAmountOfGuests((int)Math.round(Math.random()*5));
+        piaychok.setDesireExpenses((int)Math.round(Math.random()*1000));
+        piaychok.setMeetingDescription("some description of meeting");
+        piaychok.setWriteToMe("forjava2022@gmail.com");
+        return piaychok;
     }
 
     private void addTypesToPlaces(List<Type> types) {
@@ -119,6 +131,8 @@ public class AutoFillingService {
                 (int) Math.round(Math.random() * 1000));
         place.setTypes(new ArrayList<>());
         place.setActivated(true);
+        place.setPiaychoks(new ArrayList<>());
+        place.getPiaychoks().add(autoCreateNewPiyachok());
         return place;
     }
 

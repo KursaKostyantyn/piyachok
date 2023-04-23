@@ -18,38 +18,38 @@ public class CommentController {
 
     private CommentService commentService;
 
-    @GetMapping("comments/myComments")
+    @GetMapping("/myComments")
     public ResponseEntity<ItemListDTO<CommentDTO>> findCommentsByUserLogin (@RequestParam String login, @RequestParam(required = false) Integer page, @RequestParam(required = false) Boolean old){
         return commentService.findCommentsByUserLogin(login,page,old);
     }
 
-    @GetMapping("comments/{commentId}")
+    @GetMapping("/{commentId}")
     public ResponseEntity<CommentDTO> findCommentById(@PathVariable int commentId){
         return commentService.findCommentById(commentId);
     }
 
-    @GetMapping("comments/placeComments")
+    @GetMapping("/placeComments")
     public ResponseEntity<ItemListDTO<CommentDTO>> findCommentsByPlaceId(@RequestParam int placeId,@RequestParam(required = false) Integer page,@RequestParam(required = false) Boolean old){
         return commentService.findCommentsByPlaceId(placeId, page, old);
     }
 
 
-    @PostMapping("comments")
+    @PostMapping("")
     public ResponseEntity<CommentDTO> saveComment(@RequestBody CommentDTO commentDTO){
         return commentService.saveComment(commentDTO);
     }
 
-    @PutMapping("comments")
+    @PutMapping("")
     public ResponseEntity<CommentDTO> updateComment(@RequestBody CommentDTO commentDTO){
         return commentService.updateComment(commentDTO);
     }
 
-    @GetMapping("comments")
+    @GetMapping("")
     public ResponseEntity<ItemListDTO<CommentDTO>> findAllComments(@RequestParam(required = false) Integer page, @RequestParam(required = false) Boolean old){
         return commentService.findAllComments(page, old);
     }
 
-    @DeleteMapping("comments/{commentId}")
+    @DeleteMapping("/{commentId}")
     public ResponseEntity<HttpStatus> deleteCommentById(@PathVariable int commentId){
         return commentService.deleteCommentById(commentId);
     }
