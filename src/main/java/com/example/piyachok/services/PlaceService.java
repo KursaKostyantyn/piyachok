@@ -1,11 +1,9 @@
 package com.example.piyachok.services;
 
 import com.example.piyachok.constants.Role;
-import com.example.piyachok.dao.FeatureDAO;
-import com.example.piyachok.dao.PlaceDAO;
-import com.example.piyachok.dao.TypeDAO;
-import com.example.piyachok.dao.UserDAO;
+import com.example.piyachok.dao.*;
 import com.example.piyachok.models.*;
+import com.example.piyachok.models.dto.FeatureDTO;
 import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.PlaceDTO;
 import com.example.piyachok.models.dto.TypeDTO;
@@ -34,6 +32,7 @@ public class PlaceService {
     private TypeDAO typeDAO;
     private FeatureDAO featureDAO;
     private ItemListService itemListService;
+    private TopDAO topDAO;
 
 
     public static PlaceDTO convertPlaceToPlaceDTO(Place place) {
@@ -114,8 +113,8 @@ public class PlaceService {
                 type.getPlaces().remove(place);
                 typeDAO.save(type);
             }
-            List<Feature> features=featureDAO.findAllByPlacesContaining(place);
-            for (Feature feature:features){
+            List<Feature> features = featureDAO.findAllByPlacesContaining(place);
+            for (Feature feature : features) {
                 feature.getPlaces().remove(place);
                 featureDAO.save(feature);
             }
@@ -143,6 +142,7 @@ public class PlaceService {
                 .collect(Collectors.toList());
         return itemListService.createResponseEntity(places, itemsOnPage, page, old);
     }
+
 
     public ResponseEntity<ItemListDTO<PlaceDTO>> findAllActivatedPlaces(Integer page,
                                                                         Boolean alphabet,
@@ -383,6 +383,32 @@ public class PlaceService {
         return new ResponseEntity<>(itemListService.createItemList(placeDTOS, itemsOnPage, page, old), HttpStatus.OK);
     }
 
+    public ResponseEntity<PlaceDTO> addListTopsToPLace(List<Integer> topIds, int placeId) {
+        List<Top> tops = new ArrayList<>();
+        if (placeId <= 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        for (Integer topId : topIds) {
+            if (topId <= 0) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        }
+        Place place = placeDAO.findById(placeId).orElse(new Place());
+        if (place.getId() != 0) {
+            place.setTops(new ArrayList<>());
+            for (Integer topId : topIds) {
+                Top top = topDAO.findById(topId).orElse(new Top());
+                if (top.getId() != 0) {
+                    place.getTops().add(top);
+                }
+            }
+            placeDAO.save(place);
+            return new ResponseEntity<>(convertPlaceToPlaceDTO(place), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+
     private List<Place> filterPlacesByRating(List<Place> places, int rating) {
         return places.stream().filter(place -> calculateAverageRating(place.getRatings()) >= rating).collect(Collectors.toList());
     }
@@ -406,5 +432,33 @@ public class PlaceService {
         }
         return filteredPlaces;
     }
+
+    public ResponseEntity<List<FeatureDTO>> updateListOfFeaturesById(int placeId, List<Integer> featureIds) {
+        Place place = placeDAO.findById(placeId).orElse(new Place());
+
+        if (placeId <= 0 || place.getId()==0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        if (!SecurityService.authorizedUserHasRole(Role.ROLE_SUPERADMIN.getUserRole()) && !SecurityService.getLoginAuthorizedUser().equals(place.getUser().getLogin())){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        List<Feature> features = new ArrayList<>();
+        for (Integer featureId : featureIds) {
+            Feature feature = featureDAO.findFeatureById(featureId).orElse(new Feature());
+            if (feature.getId() != 0) {
+                features.add(feature);
+            }
+        }
+
+        if (place.getId() != 0) {
+            place.setFeatures(features);
+            placeDAO.save(place);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
 
 }

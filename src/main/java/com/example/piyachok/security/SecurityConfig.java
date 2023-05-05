@@ -134,6 +134,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/users/userPhoto/**").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(), Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
                 .antMatchers(HttpMethod.GET, "/users/**").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(), Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
                 .antMatchers(HttpMethod.DELETE, "/users/**").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(), Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
+                .antMatchers(HttpMethod.GET, "/tops").permitAll()
+                .antMatchers(HttpMethod.GET, "/tops/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/tops").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole())
+                .antMatchers(HttpMethod.DELETE, "/tops/**").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole())
+                .antMatchers(HttpMethod.PUT, "/tops/addPlace").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(), Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
+                .antMatchers(HttpMethod.PUT, "/tops/deletePlace").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(), Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
+                .antMatchers(HttpMethod.PUT, "/tops/**").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole())
+
                 .and();
 
         http = http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();

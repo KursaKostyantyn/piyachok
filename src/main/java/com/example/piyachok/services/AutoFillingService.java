@@ -3,10 +3,7 @@ package com.example.piyachok.services;
 import com.example.piyachok.constants.Category;
 import com.example.piyachok.constants.Gender;
 import com.example.piyachok.constants.Role;
-import com.example.piyachok.dao.FeatureDAO;
-import com.example.piyachok.dao.PlaceDAO;
-import com.example.piyachok.dao.TypeDAO;
-import com.example.piyachok.dao.UserDAO;
+import com.example.piyachok.dao.*;
 import com.example.piyachok.models.*;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -28,6 +26,8 @@ public class AutoFillingService {
 
     private FeatureDAO featureDAO;
     private PasswordEncoder passwordEncoder;
+    private TopDAO topDAO;
+
 
 
     @Bean
@@ -41,11 +41,13 @@ public class AutoFillingService {
             System.out.println("autoFilling started");
             List<Type> types = autoCreateListOfTypes();
             List<Feature> features=autoCreateListOfFeatures();
+            autoCreateListOfTops();
             for (int i = 0; i < 5; i++) {
                 autoFillingEntity(i, types);
             }
             addTypesToPlaces(types);
             addFeaturesToPlaces();
+            addTopsToPlaces();
         }
     }
 
@@ -241,6 +243,35 @@ public class AutoFillingService {
         features.add(parking);
         features.add(liveMusic);
         return features;
+    }
+
+    private void autoCreateListOfTops(){
+        Top disco=new Top("топ серед дискотек", new ArrayList<>());
+        Top restaurant=new Top("топ серед сімейних ресторанів", new ArrayList<>());
+        Top pub=new Top("топ серед пабів", new ArrayList<>());
+        topDAO.save(disco);
+        topDAO.save(restaurant);
+        topDAO.save(pub);
+    }
+
+    private void addTopsToPlaces(){
+        List<Place> places=placeDAO.findAll();
+        List<Top> tops=topDAO.findAll();
+        for (Top top:tops){
+            top.setPlaces(new ArrayList<>());
+        }
+        int index=0;
+        for (Place place:places){
+            if (index==3){
+                index=0;
+            }
+            Top top=tops.get(index);
+            place.setTops(new ArrayList<>());
+            place.getTops().add(top);
+            top.getPlaces().add(place);
+            placeDAO.save(place);
+            index+=1;
+        }
     }
 
 

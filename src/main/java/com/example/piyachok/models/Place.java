@@ -122,6 +122,16 @@ public class Place {
     @Fetch(FetchMode.SELECT)
     private List<Piaychok> piaychoks=new ArrayList<>();
 
+    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "places_tops",
+            joinColumns = @JoinColumn(name = "place_id"),
+            inverseJoinColumns = @JoinColumn(name = "top_id")
+    )
+    @ToString.Exclude
+    @Fetch(FetchMode.SELECT)
+    private List<Top> tops;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> photos = new HashSet<>();
 

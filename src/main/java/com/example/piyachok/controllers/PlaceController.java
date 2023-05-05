@@ -2,14 +2,19 @@ package com.example.piyachok.controllers;
 
 import com.example.piyachok.models.Place;
 import com.example.piyachok.models.Type;
+import com.example.piyachok.models.dto.FeatureDTO;
 import com.example.piyachok.models.dto.ItemListDTO;
 import com.example.piyachok.models.dto.PlaceDTO;
 import com.example.piyachok.services.PlaceService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @AllArgsConstructor
@@ -79,8 +84,18 @@ public class PlaceController {
                                                               @RequestParam(required = false) Integer averageCheckFrom,
                                                               @RequestParam(required = false) Integer averageCheckTo,
                                                               @RequestParam(required = false) Integer page,
-                                                              @RequestParam(required = false) Boolean old){
-        return placeService.filterPlaces(rating,types,averageCheckFrom,averageCheckTo,page,old);
+                                                              @RequestParam(required = false) Boolean old) {
+        return placeService.filterPlaces(rating, types, averageCheckFrom, averageCheckTo, page, old);
+    }
+
+    @GetMapping("/{placeId}/tops")
+    public ResponseEntity<PlaceDTO> addListTopsToPLace(@RequestParam List<Integer> topIds, @PathVariable int placeId) {
+        return placeService.addListTopsToPLace(topIds, placeId);
+    }
+
+    @PutMapping("/{placeId}/updateFeatures")
+    public ResponseEntity<List<FeatureDTO>> updateListOfFeaturesById(@PathVariable int placeId,@RequestParam List<Integer> featureIds) {
+        return placeService.updateListOfFeaturesById(placeId, featureIds);
     }
 
 }
