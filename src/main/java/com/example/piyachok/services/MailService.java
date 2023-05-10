@@ -45,4 +45,17 @@ public class MailService {
         javaMailSender.send(mimeMessage);
     }
 
+    public void sendMailToAdmin(String text, String placeEmail, String userEmail){
+        MimeMessage mimeMessage=javaMailSender.createMimeMessage();
+        MimeMessageHelper helper =new MimeMessageHelper(mimeMessage);
+        try{
+            helper.setFrom(userEmail);
+            helper.setTo(placeEmail);
+            helper.setText(text);
+        } catch (MessagingException e){
+            e.printStackTrace();
+        }
+        javaMailSender.send(mimeMessage);
+    }
+
 }

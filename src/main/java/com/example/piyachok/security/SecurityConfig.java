@@ -102,6 +102,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/places/notActivated").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole())
                 .antMatchers(HttpMethod.PUT, "/places/addPhotos").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(), Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
                 .antMatchers(HttpMethod.PUT, "/places/placePhoto/**").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(), Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
+                .antMatchers(HttpMethod.PUT, "/places/sendMailToAdmin/**").hasAnyRole(Role.ROLE_SUPERADMIN.getUserRole(), Role.ROLE_ADMIN.getUserRole(), Role.ROLE_USER.getUserRole())
                 .antMatchers(HttpMethod.GET, "/places/search/findPLaceByName").permitAll()
                 .antMatchers(HttpMethod.GET, "/places/filters").permitAll()
                 .antMatchers(HttpMethod.GET, "/places/**").permitAll()

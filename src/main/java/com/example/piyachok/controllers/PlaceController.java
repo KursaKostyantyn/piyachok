@@ -98,4 +98,9 @@ public class PlaceController {
         return placeService.updateListOfFeaturesById(placeId, featureIds);
     }
 
+    @PutMapping("/sendMailToAdmin/{placeId}")
+    public ResponseEntity<HttpStatus>  sendMailToAdmin(@RequestBody String text,@PathVariable int placeId){
+        return placeService.sendMailToAdmin(text, placeId);
+    }
+
 }

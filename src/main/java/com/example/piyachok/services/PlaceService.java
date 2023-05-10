@@ -33,6 +33,7 @@ public class PlaceService {
     private FeatureDAO featureDAO;
     private ItemListService itemListService;
     private TopDAO topDAO;
+    private MailService mailService;
 
 
     public static PlaceDTO convertPlaceToPlaceDTO(Place place) {
@@ -459,6 +460,19 @@ public class PlaceService {
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
+    public ResponseEntity<HttpStatus> sendMailToAdmin(String text, int placeId){
+        Place place=placeDAO.findById(placeId).orElse(new Place());
+        String loginAuthorizedUser = SecurityService.getLoginAuthorizedUser();
+        User user = userDAO.findUserByLogin(loginAuthorizedUser).orElse(new User());
+        if (place.getId()!=0 && user.getId()!=0){
+            mailService.sendMailToAdmin(text,place.getContacts().getEmail(),user.getEmail());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
 
 
 }
